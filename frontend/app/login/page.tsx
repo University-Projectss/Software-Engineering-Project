@@ -1,4 +1,28 @@
+"use client";
+
+import { useState } from "react";
+import { Input } from "./input";
+import { DataInterface } from "./types";
+
 export default function Login() {
+  const [authState, setAuthState] = useState<"Login" | "Register">("Login");
+  const [data, setData] = useState<DataInterface>({ email: "", password: "" });
+  const [errors, setErrors] = useState<DataInterface>({
+    email: "",
+    password: "",
+  });
+
+  const handleChangeAuthState = () => {
+    setAuthState(authState === "Login" ? "Register" : "Login");
+  };
+
+  const handleSubmit = () => {
+    setErrors({
+      email: data.email === "" ? "Error!" : "",
+      password: data.password === "" ? "Error!" : "",
+    });
+  };
+
   return (
     <div className="w-screen h-screen flex flex-row items-center">
       <div className="h-screen w-1/2 overflow-hidden">
@@ -9,21 +33,45 @@ export default function Login() {
           <h1 className="text-slate-50 text-5xl font-bold">WELCOME</h1>
         </div>
 
-        <div className="relative h-1/3 flex flex-col border-black border justify-between">
-          <h1 className="text-darkPurple text-4xl font-bold">Login</h1>
-          <input type="email" name="email" id="email" placeholder="Email" />
-          <input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Password"
+        <div className="relative h-1/3 flex flex-col justify-center">
+          <h1 className="absolute top-0 left-0 text-darkPurple text-4xl font-bold">
+            {authState}
+          </h1>
+          <Input
+            type="email"
+            value={data.email}
+            error={errors.email}
+            setValue={(email) => {
+              setData({ ...data, email });
+            }}
           />
-          <button className="absolute">Login</button>
+          <Input
+            type="password"
+            isLast
+            value={data.password}
+            error={errors.password}
+            setValue={(password) => {
+              setData({ ...data, password });
+            }}
+          />
+          <button
+            onClick={handleSubmit}
+            className="absolute bottom-0 right-0 bg-darkPurple text-white px-7 py-3 rounded-xl"
+          >
+            {authState}
+          </button>
         </div>
 
         <div className="absolute flex flex-row bottom-4 text-darkPurple">
-          <p className="mr-1">Don't have an account?</p>
-          <p className="font-bold underline cursor-pointer">Create one!</p>
+          <p className="mr-1">
+            {authState === "Login" ? "Don't" : "Already"} have an account?
+          </p>
+          <p
+            className="font-bold underline cursor-pointer"
+            onClick={handleChangeAuthState}
+          >
+            {authState === "Login" ? "Create one!" : "Login!"}
+          </p>
         </div>
       </div>
     </div>
