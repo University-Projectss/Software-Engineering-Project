@@ -1,3 +1,9 @@
+import Login from "./login/page";
+
 export default function Home() {
-  return <h1>Hello there</h1>;
+  const isLoggedIn = false;
+
+  if (!isLoggedIn) return <Login />;
+
+  return <h1>Hello there home</h1>;
 }
