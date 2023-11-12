@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Input } from "./input";
 import { DataInterface } from "./types";
+import { UserContext } from "../page";
 
 export default function Login() {
+  const userContext = useContext(UserContext);
   const [authState, setAuthState] = useState<"Login" | "Register">("Login");
   const [data, setData] = useState<DataInterface>({ email: "", password: "" });
   const [errors, setErrors] = useState<DataInterface>({
@@ -17,10 +19,14 @@ export default function Login() {
   };
 
   const handleSubmit = () => {
-    setErrors({
-      email: data.email === "" ? "Error!" : "",
-      password: data.password === "" ? "Error!" : "",
-    });
+    if (data.email === "" || data.password === "") {
+      setErrors({
+        email: data.email === "" ? "Error!" : "",
+        password: data.password === "" ? "Error!" : "",
+      });
+    } else {
+      userContext.login();
+    }
   };
 
   return (
