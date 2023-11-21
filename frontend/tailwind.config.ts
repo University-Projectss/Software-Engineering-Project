@@ -14,12 +14,10 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       backgroundColor: {
-        darkPurple: "#541DAF",
-        lightPurple: "#6400D7",
+        customBlue: "#467BE1",
       },
       textColor: {
-        darkPurple: "#541DAF",
-        lightPurple: "#6400D7",
+        customBlue: "#467BE1",
       },
     },
   },
