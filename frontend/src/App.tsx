@@ -1,16 +1,26 @@
-import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Home } from "./components/home";
-import { NotFound } from "./components/not-found";
+import { createContext } from "react";
+import { BrowserRouter } from "react-router-dom";
+import { RouterComponent } from "./RouterComponent";
+import {
+  ContextInterface,
+  useAuthContext,
+} from "./components/utils/useAuthContext";
+
+export const UserContext = createContext<ContextInterface>({
+  user: null,
+  login: () => {},
+  logout: () => {},
+});
 
 function App() {
+  const createUser = useAuthContext();
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <UserContext.Provider value={createUser}>
+      <BrowserRouter>
+        <RouterComponent />
+      </BrowserRouter>
+    </UserContext.Provider>
   );
 }
 

@@ -1,9 +1,10 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
+import { CustomText } from "../common/CustomText";
 
 export const Home = () => {
   return (
-    <Flex direction="column" height="100vh" align="center" justify="center">
-      <Text fontFamily="Poppins">Hello there</Text>
+    <Flex height="100vh" align="center" justify="center">
+      <CustomText>Hello there from home</CustomText>
     </Flex>
   );
 };
