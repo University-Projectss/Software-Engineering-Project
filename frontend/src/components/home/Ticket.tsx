@@ -14,20 +14,14 @@ import {
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FaTrash, FaPen } from "react-icons/fa";
 import { colors } from "../../theme";
+import { TicketInterface } from "./types";
 
 interface TicketProps {
-    doctorName: string;
-    date: string;
-    userRequest: string;
-    status: "opened" | "closed";
-    specialization: string;
+    ticket: TicketInterface
 }
 
 export const Ticket: React.FC<TicketProps> = ({
-    doctorName,
-    date,
-    userRequest,
-    specialization,
+    ticket
 }) => {
     return (
         <Box
@@ -67,16 +61,16 @@ export const Ticket: React.FC<TicketProps> = ({
             {/* Ticket content */}
             <Box>
                 <Text fontSize="lg" fontWeight="bold" color="black">
-                    Dr. {doctorName}
+                    Dr. {ticket.doctorName}
                 </Text>
                 <Text fontSize="md" color="black">
                     Date:{" "}
                     <Text as="span" fontWeight="bold">
-                        {date}
+                        {ticket.date}
                     </Text>
                     {/* Specialization Badge */}
                     <Badge ml={2} bg={colors.blue} color="white">
-                        {specialization}
+                        {ticket.specialization}
                     </Badge>
                 </Text>
                 <Divider borderColor="black" mt={2} mb={2} />
@@ -90,7 +84,7 @@ export const Ticket: React.FC<TicketProps> = ({
                     Your Request
                 </Text>
                 <Text fontSize="md" color="black" noOfLines={3}>
-                    {userRequest}
+                    {ticket.userRequest}
                 </Text>
             </Box>
 

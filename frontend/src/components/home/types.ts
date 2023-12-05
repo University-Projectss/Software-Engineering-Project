@@ -1,5 +1,4 @@
-export interface Ticket {
-    id: number;
+export interface TicketInterface {
     doctorName: string;
     date: string;
     userRequest: string;

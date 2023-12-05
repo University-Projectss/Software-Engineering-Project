@@ -2,16 +2,10 @@
 import React from "react";
 import { Box, Flex, TabPanel, Text } from "@chakra-ui/react";
 import { Ticket } from "./Ticket";
+import { TicketInterface } from "./types";
 
 interface TicketsTabContentProps {
-    tickets: {
-        id: number;
-        doctorName: string;
-        date: string;
-        userRequest: string;
-        status: "opened" | "closed";
-        specialization: string;
-    }[];
+    tickets: TicketInterface[];
     text: string;
 }
 
@@ -27,13 +21,9 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
             <Flex mt={4} pl={10}>
                 {tickets.length > 0 ? (
                     tickets.map((ticket) => (
-                        <Box key={ticket.id} mr={4}>
+                        <Box mr={4}>
                             <Ticket
-                                doctorName={ticket.doctorName}
-                                date={ticket.date}
-                                userRequest={ticket.userRequest}
-                                status={ticket.status}
-                                specialization={ticket.specialization}
+                                ticket={ticket}                                
                             />
                         </Box>
                     ))
