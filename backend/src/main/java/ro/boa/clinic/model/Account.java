@@ -18,6 +18,10 @@ public class Account implements UserDetails {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    protected Role role;
+
     @OneToOne
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     private Profile profile;
@@ -28,17 +32,17 @@ public class Account implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    protected Account() {
-    }
+    protected Account() {}
 
-    public Account(String email, String password) {
+    public Account(String email, String password, Role role) {
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(role);
     }
 
     @Override

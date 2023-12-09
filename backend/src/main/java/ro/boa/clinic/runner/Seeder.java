@@ -13,6 +13,6 @@ public class Seeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        accountService.createAccount("user1@example.com", "Password1");
+        accountService.createPatient("user1@example.com", "Password1");
     }
 }
