@@ -11,14 +11,12 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy= InheritanceType.TABLE_PER_CLASS)
-@DiscriminatorColumn(name = "type")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    @Column(name = "type")
-    protected String type;
+
     @OneToOne(mappedBy = "profile")
     private Account account;
 }
