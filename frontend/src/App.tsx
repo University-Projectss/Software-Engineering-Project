@@ -9,6 +9,7 @@ import {
 export const UserContext = createContext<ContextInterface>({
   user: null,
   login: () => {},
+  register: () => {},
   logout: () => {},
 });
 

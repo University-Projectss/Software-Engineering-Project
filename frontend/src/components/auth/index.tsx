@@ -27,7 +27,11 @@ export const Auth = () => {
         password: data.password === "" ? "Error!" : "",
       });
     } else {
-      userContext.login();
+      if (authState === "Login") {
+        userContext.login(data.email, data.password);
+      } else {
+        userContext.register(data.email, data.password);
+      }
     }
   };
 
