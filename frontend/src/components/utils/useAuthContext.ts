@@ -8,8 +8,8 @@ export interface UserInterface {
 
 export interface ContextInterface {
   user: UserInterface | null;
-  login: (email: String, password: String) => void;
-  register: (email: String, password: String) => void;
+  login: (email: string, password: string) => void;
+  register: (email: string, password: string) => void;
   logout: () => void;
 }
 
@@ -17,9 +17,9 @@ export const useAuthContext = () => {
   const [user, setUser] = useState<UserInterface | null>(null);
   const toast = useToast();
 
-  const login = async (email: String, password: String) => {
+  const login = async (email: string, password: string) => {
     await apiClient
-      .post("/login", { email, password })
+      .post("/login", {}, { auth: { username: email, password: password } })
       .then((res) => {
         console.log(res.data);
       })
@@ -34,7 +34,7 @@ export const useAuthContext = () => {
       );
   };
 
-  const register = async (email: String, password: String) => {
+  const register = async (email: string, password: string) => {
     await apiClient.post("/accounts", { email, password }).then((res) => {});
   };
 
