@@ -1,14 +1,28 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "./App";
 import { Route, Routes } from "react-router";
 import { Home } from "./components/home";
 import { NotFound } from "./components/notFound";
 import { Auth } from "./components/auth";
+import { Flex, Spinner } from "@chakra-ui/react";
 
 export const RouterComponent = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const auth = useContext(UserContext);
 
-  return auth.user ? (
+  useEffect(() => {
+    const possibleToken = localStorage.getItem("accesToken");
+    if (possibleToken) {
+      auth.setToken(possibleToken);
+    }
+    setIsLoading(false);
+  }, [auth.token]);
+
+  return isLoading ? (
+    <Flex height="100vh" alignItems="center" justify="center">
+      <Spinner />
+    </Flex>
+  ) : auth.token !== "" ? (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="*" element={<NotFound />} />

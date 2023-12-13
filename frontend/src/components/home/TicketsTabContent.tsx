@@ -5,32 +5,30 @@ import { Ticket } from "./Ticket";
 import { TicketInterface } from "./types";
 
 interface TicketsTabContentProps {
-    tickets: TicketInterface[];
-    text: string;
+  tickets: TicketInterface[];
+  text: string;
 }
 
 export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
-    tickets,
-    text,
+  tickets,
+  text,
 }) => {
-    return (
-        <TabPanel>
-            <Text fontSize="4xl" fontWeight="bold" color="black" pl={10}>
-                {text}
-            </Text>
-            <Flex mt={4} pl={10}>
-                {tickets.length > 0 ? (
-                    tickets.map((ticket) => (
-                        <Box mr={4}>
-                            <Ticket
-                                ticket={ticket}                                
-                            />
-                        </Box>
-                    ))
-                ) : (
-                    <Text>{`No ${text.toLowerCase()} tickets`}</Text>
-                )}
-            </Flex>
-        </TabPanel>
-    );
+  return (
+    <TabPanel>
+      <Text fontSize="4xl" fontWeight="bold" color="black" pl={10}>
+        {text}
+      </Text>
+      <Flex mt={4} pl={10}>
+        {tickets.length > 0 ? (
+          tickets.map((ticket, i) => (
+            <Box key={i} mr={4}>
+              <Ticket ticket={ticket} />
+            </Box>
+          ))
+        ) : (
+          <Text>{`No ${text.toLowerCase()} tickets`}</Text>
+        )}
+      </Flex>
+    </TabPanel>
+  );
 };

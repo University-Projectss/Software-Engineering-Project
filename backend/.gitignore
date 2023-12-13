@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+####################
+.env
+/src/main/resources/jwt.key
+/src/main/resources/jwt.pub

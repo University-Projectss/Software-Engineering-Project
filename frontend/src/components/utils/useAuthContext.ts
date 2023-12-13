@@ -11,17 +11,21 @@ export interface ContextInterface {
   login: (email: string, password: string) => void;
   register: (email: string, password: string) => void;
   logout: () => void;
+  token: string;
+  setToken: (val: string) => void;
 }
 
 export const useAuthContext = () => {
   const [user, setUser] = useState<UserInterface | null>(null);
+  const [token, setToken] = useState<string>("");
   const toast = useToast();
 
   const login = async (email: string, password: string) => {
     await apiClient
       .post("/login", {}, { auth: { username: email, password: password } })
       .then((res) => {
-        console.log(res.data);
+        localStorage.setItem("accesToken", res.data);
+        setToken(res.data);
       })
       .catch((err) =>
         toast({
@@ -35,12 +39,26 @@ export const useAuthContext = () => {
   };
 
   const register = async (email: string, password: string) => {
-    await apiClient.post("/accounts", { email, password }).then((res) => {});
+    await apiClient
+      .post("/accounts", { email, password })
+      .then(async (res) => {
+        await login(email, password);
+      })
+      .catch((err) =>
+        toast({
+          title: "Oops",
+          description: "Could not register!",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      );
   };
 
   const logout = () => {
+    setToken("");
     setUser(null);
   };
 
-  return { user, login, register, logout };
+  return { user, login, register, token, setToken, logout };
 };
