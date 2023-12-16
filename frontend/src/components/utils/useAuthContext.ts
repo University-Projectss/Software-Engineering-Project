@@ -11,13 +11,13 @@ export interface ContextInterface {
   login: (email: string, password: string) => void;
   register: (email: string, password: string) => void;
   logout: () => void;
-  token: string;
+  token: string | null;
   setToken: (val: string) => void;
 }
 
 export const useAuthContext = () => {
   const [user, setUser] = useState<UserInterface | null>(null);
-  const [token, setToken] = useState<string>("");
+  const [token, setToken] = useState<string | null>(null);
   const toast = useToast();
 
   const login = async (email: string, password: string) => {
@@ -56,7 +56,7 @@ export const useAuthContext = () => {
   };
 
   const logout = () => {
-    setToken("");
+    setToken(null);
     setUser(null);
   };
 

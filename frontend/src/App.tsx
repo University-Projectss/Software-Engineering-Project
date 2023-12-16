@@ -7,7 +7,7 @@ import {
 } from "./components/utils/useAuthContext";
 
 export const UserContext = createContext<ContextInterface>({
-  token: "",
+  token: null,
   setToken: (val: string) => {},
   user: null,
   login: () => {},

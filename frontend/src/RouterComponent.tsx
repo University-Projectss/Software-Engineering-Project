@@ -22,7 +22,7 @@ export const RouterComponent = () => {
     <Flex height="100vh" alignItems="center" justify="center">
       <Spinner />
     </Flex>
-  ) : auth.token !== "" ? (
+  ) : auth.token != null ? (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="*" element={<NotFound />} />
