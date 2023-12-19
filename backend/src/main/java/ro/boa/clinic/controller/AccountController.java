@@ -18,7 +18,7 @@ public class AccountController {
     @PostMapping("/accounts")
     public ResponseEntity<Void> createAccount(@RequestBody AccountRegistrationDto accountRegistrationDto) {
         try {
-            accountService.createPatient(accountRegistrationDto.email(), accountRegistrationDto.password());
+            accountService.createPatientAccount(accountRegistrationDto.email(), accountRegistrationDto.password());
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.badRequest().build();
