@@ -15,7 +15,7 @@ public class TicketService {
     private TicketRepository ticketRepository;
 
     public Ticket createTicket(TicketCreationRequestDto ticketCreationRequest, Patient patient) {
-        log.info("Creating a new ticket..");
+        log.info("Creating a new ticket");
         var ticket = new Ticket(patient,
                     ticketCreationRequest.title(),
                     ticketCreationRequest.description(),

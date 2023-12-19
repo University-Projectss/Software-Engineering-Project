@@ -19,16 +19,16 @@ public class PatientService {
     @Autowired
     private AccountService accountService;
 
-    public void createPatientProfile(String firstName, String lastName, Sex sex, LocalDate birthdate, Account account) {
-        log.info("Creating a new patient profile..");
+    public Patient createPatientProfile(String firstName, String lastName, Sex sex, LocalDate birthdate, Account account) {
+        log.info("Creating a new patient profile");
         var patient = new Patient(firstName, lastName, sex, birthdate);
         var patientCreated = patientRepository.save(patient);
-        account.setProfile(patientCreated);
-        accountService.saveAccount(account);
+        accountService.linkProfileToAccount(patientCreated, account.getEmail());
+        return patientCreated;
     }
 
     public Patient getAuthenticatedPatientProfile() {
-        log.info("Getting authenticated patient profile..");
+        log.info("Getting authenticated patient profile");
         var userEmail = accountService.getAuthenticatedUserEmail();
         var patientProfile = patientRepository.findPatientProfileByEmail(userEmail);
         if (patientProfile == null) {

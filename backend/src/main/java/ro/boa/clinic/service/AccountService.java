@@ -32,10 +32,6 @@ public class AccountService {
         return accountRepository.findByEmail(email);
     }
 
-    public Account saveAccount(Account account) {
-        return accountRepository.save(account);
-    }
-
     /**
      * @param email    the email address of the account
      * @param password the plain text password
@@ -43,7 +39,7 @@ public class AccountService {
      * @throws DataIntegrityViolationException the email address is likely already used
      */
     public Account createAccount(String email, String password, Role role) throws DataIntegrityViolationException {
-        log.info("Creating a new account..");
+        log.info("Creating a new account");
         final String hashedPassword = passwordEncoder.encode(password);
         Account newAccount = new Account(email, hashedPassword, role);
 
@@ -51,7 +47,7 @@ public class AccountService {
     }
 
     public String getAuthenticatedUserEmail() {
-        log.info("Getting authenticated user account..");
+        log.info("Getting authenticated user account");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             return authentication.getName();
@@ -60,9 +56,9 @@ public class AccountService {
     }
 
     public void linkProfileToAccount(Profile profile, String email) {
-        log.info("Linking profile to account..");
+        log.info("Linking profile to account");
         var account = getAccountByEmail(email);
         account.setProfile(profile);
-        saveAccount(account);
+        accountRepository.save(account);
     }
 }
