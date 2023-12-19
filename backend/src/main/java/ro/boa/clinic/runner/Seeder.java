@@ -20,7 +20,7 @@ public class Seeder implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         accountService.createPatientAccount("user1@example.com", "Password1");
 
-        accountService.createPatientAccount("ioanapopescu@gmail.com", "password");
-        patientService.createPatientWithAccount("Ioana", "Popescu", Sex.FEMALE, LocalDate.of(2023, 1, 8), "ioanapopescu@gmail.com");
+        var account1 = accountService.createPatientAccount("user2@example.com", "Password2");
+        patientService.createPatientProfile("John", "Doe", Sex.MALE, LocalDate.of(2004, 1, 8), account1);
     }
 }

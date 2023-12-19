@@ -3,6 +3,8 @@ package ro.boa.clinic.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ro.boa.clinic.exception.type.PatientProfileNotFoundException;
+import ro.boa.clinic.model.Account;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Sex;
 import ro.boa.clinic.repository.PatientRepository;
@@ -17,28 +19,22 @@ public class PatientService {
     @Autowired
     private AccountService accountService;
 
-    public void createPatientWithAccount(String firstName, String lastName, Sex sex, LocalDate birthdate, String email){
-        log.info("Creating a new patient account..");
-        var patientCreated = createPatient(firstName, lastName, sex, birthdate);
-        linkPatientToAccount(patientCreated, email);
-    }
-
-    public Patient createPatient(String firstName, String lastName, Sex sex, LocalDate birthdate){
-        log.info("Creating a new patient..");
+    public void createPatientProfile(String firstName, String lastName, Sex sex, LocalDate birthdate, Account account) {
+        log.info("Creating a new patient profile..");
         var patient = new Patient(firstName, lastName, sex, birthdate);
-        return patientRepository.save(patient);
-    }
-
-    public void linkPatientToAccount(Patient patient, String email){
-        log.info("Linking patient profile to account..");
-        var account = accountService.getAccountByEmail(email);
-        account.setProfile(patient);
+        var patientCreated = patientRepository.save(patient);
+        account.setProfile(patientCreated);
         accountService.saveAccount(account);
     }
 
-    public Patient getAuthenticatedPatientProfile(){
+    public Patient getAuthenticatedPatientProfile() {
         log.info("Getting authenticated patient profile..");
         var account = accountService.getAuthenticatedUserAccount();
-        return patientRepository.findByAccount(account);
+        var patientProfile = patientRepository.findByAccount(account);
+        if (patientProfile == null) {
+            throw new PatientProfileNotFoundException();
+        } else {
+            return patientProfile;
+        }
     }
 }

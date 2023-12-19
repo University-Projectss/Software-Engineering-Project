@@ -1,16 +1,14 @@
 package ro.boa.clinic.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "tickets")
 public class Ticket {
     @Id
@@ -23,14 +21,18 @@ public class Ticket {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
+    @NonNull
     private Patient patient;
 
     @Column(name = "title", nullable = false)
+    @NonNull
     private String title;
 
     @Column(name = "description", nullable = false)
+    @NonNull
     private String description;
 
     @Column(name = "specialization")
+    @NonNull
     private String specialization;
 }
