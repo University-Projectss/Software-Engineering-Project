@@ -29,8 +29,8 @@ public class PatientService {
 
     public Patient getAuthenticatedPatientProfile() {
         log.info("Getting authenticated patient profile..");
-        var account = accountService.getAuthenticatedUserAccount();
-        var patientProfile = patientRepository.findByAccount(account);
+        var userEmail = accountService.getAuthenticatedUserEmail();
+        var patientProfile = patientRepository.findPatientProfileByEmail(userEmail);
         if (patientProfile == null) {
             throw new PatientProfileNotFoundException();
         } else {

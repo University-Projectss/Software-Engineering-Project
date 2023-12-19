@@ -50,12 +50,11 @@ public class AccountService {
         return accountRepository.save(newAccount);
     }
 
-    public Account getAuthenticatedUserAccount() {
+    public String getAuthenticatedUserEmail() {
         log.info("Getting authenticated user account..");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            var email = authentication.getName();
-            return accountRepository.findByEmail(email);
+            return authentication.getName();
         }
         return null;
     }
