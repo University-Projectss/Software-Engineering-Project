@@ -39,6 +39,7 @@ public class AccountService {
     /**
      * @param email    the email address of the account
      * @param password the plain text password
+     * @return the created account entity
      * @throws DataIntegrityViolationException the email address is likely already used
      */
     public Account createAccount(String email, String password, Role role) throws DataIntegrityViolationException {
