@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.boa.clinic.exception.type.PatientProfileNotFoundException;
-import ro.boa.clinic.model.Account;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Sex;
 import ro.boa.clinic.repository.PatientRepository;
@@ -19,11 +18,11 @@ public class PatientService {
     @Autowired
     private AccountService accountService;
 
-    public Patient createPatientProfile(String firstName, String lastName, Sex sex, LocalDate birthdate, Account account) {
+    public Patient createPatientProfile(String firstName, String lastName, Sex sex, LocalDate birthdate, String accountEmail) {
         log.info("Creating a new patient profile");
         var patient = new Patient(firstName, lastName, sex, birthdate);
         var patientCreated = patientRepository.save(patient);
-        accountService.linkProfileToAccount(patientCreated, account.getEmail());
+        accountService.linkProfileToAccount(patientCreated, accountEmail);
         return patientCreated;
     }
 
