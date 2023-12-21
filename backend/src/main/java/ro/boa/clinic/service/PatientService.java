@@ -1,8 +1,11 @@
 package ro.boa.clinic.service;
 
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ro.boa.clinic.exception.type.AccountAlreadyHasProfile;
 import ro.boa.clinic.exception.type.PatientProfileNotFoundException;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Sex;
@@ -10,19 +13,23 @@ import ro.boa.clinic.repository.PatientRepository;
 
 import java.time.LocalDate;
 
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class PatientService {
-    @Autowired
-    private PatientRepository patientRepository;
-    @Autowired
-    private AccountService accountService;
+    private final PatientRepository patientRepository;
+    private final AccountService accountService;
 
-    public Patient createPatientProfile(String firstName, String lastName, Sex sex, LocalDate birthdate, String accountEmail) {
+    @Transactional
+    public Patient createPatientProfile(String firstName, String lastName, Sex sex, LocalDate birthdate,
+                                        String accountEmail) {
         log.info("Creating a new patient profile");
         var patient = new Patient(firstName, lastName, sex, birthdate);
         var patientCreated = patientRepository.save(patient);
-        accountService.linkProfileToAccount(patientCreated, accountEmail);
+        boolean wasLinked = accountService.linkProfileToAccount(patientCreated, accountEmail);
+        if (!wasLinked) {
+            throw new AccountAlreadyHasProfile();
+        }
         return patientCreated;
     }
 
