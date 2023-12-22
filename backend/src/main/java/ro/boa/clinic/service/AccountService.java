@@ -28,10 +28,6 @@ public class AccountService {
         return createAccount(email, password, Role.PATIENT);
     }
 
-    public Account getAccountByEmail(String email) {
-        return accountRepository.findByEmail(email);
-    }
-
     /**
      * @param email    the email address of the account
      * @param password the plain text password
@@ -55,10 +51,16 @@ public class AccountService {
         return null;
     }
 
-    public void linkProfileToAccount(Profile profile, String email) {
+    /**
+     * Links the account with the provided email to the profile, if the account has no profile associated.
+     *
+     * @param profile the profile to link
+     * @param email   the email of the account to link
+     * @return whether the profile was actually linked
+     */
+    public boolean linkProfileToAccount(Profile profile, String email) {
         log.info("Linking profile to account");
-        var account = getAccountByEmail(email);
-        account.setProfile(profile);
-        accountRepository.save(account);
+        var updatedRowsCount = accountRepository.updateProfileIfUnset(email, profile);
+        return updatedRowsCount > 0;
     }
 }
