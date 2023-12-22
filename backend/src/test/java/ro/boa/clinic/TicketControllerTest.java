@@ -43,7 +43,7 @@ public class TicketControllerTest {
     }
 
     @Test
-    void creationRequest_authenticated_createsProfile() throws Exception {
+    void creationRequest_validData_createsTicket() throws Exception {
         var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
 
         mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
@@ -56,12 +56,12 @@ public class TicketControllerTest {
     }
 
     @Test
-    void ticketId_viewTicketDetailsRequest_returnDetails() throws Exception {
+    void detailsRequest_validId_returnsDetails() throws Exception {
         String ticketDetails = "{\"status\":\"OPENED\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"doctor\":null}";
 
         ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
-        mockMvc.perform(requestTester.authenticatedGet("/tickets/1", null))
-                .andExpect(status().is2xxSuccessful())
+        mockMvc.perform(requestTester.authenticatedGet("/tickets/1"))
+                .andExpect(status().isOk())
                 .andExpect(content().string(ticketDetails));
     }
 }

@@ -12,8 +12,6 @@ import ro.boa.clinic.model.Status;
 import ro.boa.clinic.model.Ticket;
 import ro.boa.clinic.repository.TicketRepository;
 
-import java.util.Optional;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
