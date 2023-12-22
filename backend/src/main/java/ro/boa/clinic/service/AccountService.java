@@ -1,24 +1,30 @@
 package ro.boa.clinic.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ro.boa.clinic.model.Account;
+import ro.boa.clinic.model.Profile;
 import ro.boa.clinic.model.Role;
 import ro.boa.clinic.repository.AccountRepository;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Account createDoctor(String email, String password) throws DataIntegrityViolationException {
+    public Account createDoctorAccount(String email, String password) throws DataIntegrityViolationException {
         return createAccount(email, password, Role.DOCTOR);
     }
 
-    public Account createPatient(String email, String password) throws DataIntegrityViolationException {
+    public Account createPatientAccount(String email, String password) throws DataIntegrityViolationException {
         return createAccount(email, password, Role.PATIENT);
     }
 
@@ -29,9 +35,32 @@ public class AccountService {
      * @throws DataIntegrityViolationException the email address is likely already used
      */
     public Account createAccount(String email, String password, Role role) throws DataIntegrityViolationException {
+        log.info("Creating a new account");
         final String hashedPassword = passwordEncoder.encode(password);
         Account newAccount = new Account(email, hashedPassword, role);
 
         return accountRepository.save(newAccount);
+    }
+
+    public String getAuthenticatedUserEmail() {
+        log.info("Getting authenticated user account");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            return authentication.getName();
+        }
+        return null;
+    }
+
+    /**
+     * Links the account with the provided email to the profile, if the account has no profile associated.
+     *
+     * @param profile the profile to link
+     * @param email   the email of the account to link
+     * @return whether the profile was actually linked
+     */
+    public boolean linkProfileToAccount(Profile profile, String email) {
+        log.info("Linking profile to account");
+        var updatedRowsCount = accountRepository.updateProfileIfUnset(email, profile);
+        return updatedRowsCount > 0;
     }
 }

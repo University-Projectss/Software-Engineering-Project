@@ -18,12 +18,12 @@ public class Patient extends Profile {
     @Column(name = "first_name")
     private String firstName;
 
+    @Column(name = "last_name")
+    private String lastName;
+
     @Column(name = "sex")
     @Enumerated(EnumType.STRING)
     private Sex sex;
-
-    @Column(name = "last_name")
-    private String lastName;
 
     @Column(name = "birthdate")
     private LocalDate birthdate;
