@@ -24,7 +24,7 @@ public class TicketController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping(value="/tickets/{id}")
+    @GetMapping(value = "/tickets/{id}")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public ResponseEntity<TicketDetailsResponseDto> getTicketDetails(@PathVariable Long id) {
         var ticketDetails = ticketService.getTicketDetails(id);

@@ -4,5 +4,5 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such doctor specialization")
-public class DoctorSpecializationNotFound extends RuntimeException{
+public class DoctorSpecializationNotFound extends RuntimeException {
 }

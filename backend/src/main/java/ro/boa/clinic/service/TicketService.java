@@ -12,6 +12,8 @@ import ro.boa.clinic.model.Status;
 import ro.boa.clinic.model.Ticket;
 import ro.boa.clinic.repository.TicketRepository;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -22,28 +24,23 @@ public class TicketService {
     public Ticket createTicket(TicketCreationRequestDto ticketCreationRequest, Patient patient) {
         log.info("Creating a new ticket");
         var ticket = new Ticket(patient,
-                    ticketCreationRequest.title(),
-                    ticketCreationRequest.description(),
-                    ticketCreationRequest.specialization(),
-                    Status.OPENED);
+                ticketCreationRequest.title(),
+                ticketCreationRequest.description(),
+                ticketCreationRequest.specialization(),
+                Status.OPENED);
         return ticketRepository.save(ticket);
     }
 
-    public TicketDetailsResponseDto getTicketDetails(Long id){
-        var optionalTicket = ticketRepository.findById(id);
-        if (optionalTicket.isPresent()) {
-            var ticket = optionalTicket.get();
-            if (isTicketOwnedByLoggedInPatient(ticket)) {
-                log.info("Returning ticket details");
-                return new TicketDetailsResponseDto(ticket.getStatus(),
-                        ticket.getDescription(),
-                        ticket.getSpecialization(),
-                        ticket.getDoctor());
-            } else {
-                throw new UnauthorizedAccessException();
-            }
+    public TicketDetailsResponseDto getTicketDetails(Long id) {
+        var ticket = ticketRepository.findById(id).orElseThrow(TicketNotFoundException::new);
+        if (isTicketOwnedByLoggedInPatient(ticket)) {
+            log.info("Returning ticket details");
+            return new TicketDetailsResponseDto(ticket.getStatus(),
+                    ticket.getDescription(),
+                    ticket.getSpecialization(),
+                    ticket.getDoctor());
         } else {
-            throw new TicketNotFoundException();
+            throw new UnauthorizedAccessException();
         }
     }
 
