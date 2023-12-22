@@ -3,7 +3,6 @@ package ro.boa.clinic.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.boa.clinic.exception.type.AccountAlreadyHasProfile;
 import ro.boa.clinic.exception.type.PatientProfileNotFoundException;
