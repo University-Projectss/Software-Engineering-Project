@@ -10,17 +10,27 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import ro.boa.clinic.model.Account;
+import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Role;
+import ro.boa.clinic.model.Sex;
 import ro.boa.clinic.service.AccountService;
+import ro.boa.clinic.service.PatientService;
+
+import java.time.LocalDate;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
 public class RequestTester {
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private PatientService patientService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -34,9 +44,17 @@ public class RequestTester {
     @Nullable
     private String jwtToken;
 
+    @Nullable
+    private Patient patient;
+
     public Account createTestAccount(Role role) {
         account = accountService.createAccount("user@example.com", "password", role);
         return account;
+    }
+
+    public Patient createTestPatient() {
+        patient = patientService.createPatientProfile("John", "Doe", Sex.MALE, LocalDate.now(), account.getEmail());
+        return patient;
     }
 
     public String authenticateAccount() throws Exception {
@@ -54,5 +72,14 @@ public class RequestTester {
         return post(url).contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
             .content(json);
+    }
+
+    public RequestBuilder authenticatedGet(String url, Object body) throws JsonProcessingException {
+        assert jwtToken != null;
+        var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(body);
+
+        return get(url).contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
+                .content(json);
     }
 }
