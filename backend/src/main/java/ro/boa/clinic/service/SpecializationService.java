@@ -32,6 +32,7 @@ public class SpecializationService {
     public List<String> getSpecializations() {
         return doctorRepository.listAllSpecializations();
     }
+
     public Optional<String> detectSpecialization(String description) {
         OpenAiService service = new OpenAiService(openAiKey);
 
