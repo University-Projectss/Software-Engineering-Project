@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ro.boa.clinic.dto.*;
 import ro.boa.clinic.exception.TicketNotFoundException;
-import ro.boa.clinic.exception.TicketsNotFoundException;
 import ro.boa.clinic.exception.UnauthorizedAccessException;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Status;
@@ -72,7 +71,7 @@ public class TicketService {
                         .collect(Collectors.toList());
             }
         }
-        throw new TicketsNotFoundException();
+        throw new UnauthorizedAccessException();
     }
 
     private PatientTicketResponseDto convertTicketToPatientTicketDto(Ticket ticket) {
