@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ro.boa.clinic.dto.*;
 import ro.boa.clinic.exception.TicketNotFoundException;
+import ro.boa.clinic.exception.TicketsNotFoundException;
 import ro.boa.clinic.exception.UnauthorizedAccessException;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Status;
@@ -53,8 +54,8 @@ public class TicketService {
         return patientProfile.getId().equals(ticket.getPatient().getId());
     }
 
-    public List<TicketResponseDto> getAllTickets(String userEmail) {
-        var role = accountService.getAccountRoleByEmail(userEmail);
+    public List<TicketResponseDto> getAuthenticatedUserTickets() {
+        var role = accountService.getAuthenticatedUserAccount().getRole();
         switch (role) {
             case PATIENT -> {
                 var patient = patientService.getAuthenticatedPatientProfile();
@@ -71,7 +72,7 @@ public class TicketService {
                         .collect(Collectors.toList());
             }
         }
-        return null;
+        throw new TicketsNotFoundException();
     }
 
     private PatientTicketResponseDto convertTicketToPatientTicketDto(Ticket ticket) {

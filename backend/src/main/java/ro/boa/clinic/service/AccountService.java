@@ -51,10 +51,9 @@ public class AccountService {
         return null;
     }
 
-    public Role getAccountRoleByEmail(String userEmail) {
-        log.info("Getting authenticated user role");
-        var account = accountRepository.findByEmail(userEmail);
-        return account.getRole();
+    public Account getAuthenticatedUserAccount() {
+        log.info("Getting authenticated user account");
+        return accountRepository.findByEmail(getAuthenticatedUserEmail());
     }
 
     /**

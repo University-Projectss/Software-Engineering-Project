@@ -36,11 +36,10 @@ public class TicketController {
         return ResponseEntity.ok(ticketDetails);
     }
 
-    @GetMapping(value = "/tickets/all")
+    @GetMapping(value = "/tickets")
     @PreAuthorize("hasRole('ROLE_PATIENT') || hasRole('ROLE_DOCTOR')")
     public ResponseEntity<List<TicketResponseDto>> getAllTickets() {
-        var userEmail = accountService.getAuthenticatedUserEmail();
-        var tickets = ticketService.getAllTickets(userEmail);
+        var tickets = ticketService.getAuthenticatedUserTickets();
         return ResponseEntity.ok(tickets);
     }
 }

@@ -73,7 +73,7 @@ public class TicketControllerTest {
         ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
         ticketRepository.save(new Ticket(2L, null, patient, "Title1", "Description1", "Specialization1", Status.OPENED));
 
-        mockMvc.perform(requestTester.authenticatedGet("/tickets/all"))
+        mockMvc.perform(requestTester.authenticatedGet("/tickets"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(ticketList));
     }
