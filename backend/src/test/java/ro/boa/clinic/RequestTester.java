@@ -44,17 +44,13 @@ public class RequestTester {
     @Nullable
     private String jwtToken;
 
-    @Nullable
-    private Patient patient;
-
     public Account createTestAccount(Role role) {
         account = accountService.createAccount("user@example.com", "password", role);
         return account;
     }
 
     public Patient createTestPatient() {
-        patient = patientService.createPatientProfile("John", "Doe", Sex.MALE, LocalDate.now(), account.getEmail());
-        return patient;
+        return patientService.createPatientProfile("John", "Doe", Sex.MALE, LocalDate.now(), account.getEmail());
     }
 
     public String authenticateAccount() throws Exception {
