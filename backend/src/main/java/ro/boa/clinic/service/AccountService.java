@@ -51,6 +51,12 @@ public class AccountService {
         return null;
     }
 
+    public Role getAccountRoleByEmail(String userEmail) {
+        log.info("Getting authenticated user role");
+        var account = accountRepository.findByEmail(userEmail);
+        return account.getRole();
+    }
+
     /**
      * Links the account with the provided email to the profile, if the account has no profile associated.
      *

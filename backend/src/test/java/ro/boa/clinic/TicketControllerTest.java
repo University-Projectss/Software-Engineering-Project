@@ -64,4 +64,17 @@ public class TicketControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(ticketDetails));
     }
+
+    @Test
+    void ticketListRequest_validUser_returnsTicketList() throws Exception {
+        String ticketList = "[{\"id\":1,\"doctor\":null,\"title\":\"Title\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"status\":\"OPENED\"},"
+                + "{\"id\":2,\"doctor\":null,\"title\":\"Title1\",\"description\":\"Description1\",\"specialization\":\"Specialization1\",\"status\":\"OPENED\"}]";
+
+        ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
+        ticketRepository.save(new Ticket(2L, null, patient, "Title1", "Description1", "Specialization1", Status.OPENED));
+
+        mockMvc.perform(requestTester.authenticatedGet("/tickets/all"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(ticketList));
+    }
 }
