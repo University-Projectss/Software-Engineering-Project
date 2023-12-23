@@ -35,4 +35,9 @@ public class Ticket {
     @Column(name = "specialization")
     @NonNull
     private String specialization;
+
+    @Column(name = "status")
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    private Status status;
 }

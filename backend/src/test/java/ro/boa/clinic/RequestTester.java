@@ -9,11 +9,18 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import ro.boa.clinic.model.Account;
+import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Role;
+import ro.boa.clinic.model.Sex;
 import ro.boa.clinic.service.AccountService;
+import ro.boa.clinic.service.PatientService;
+
+import java.time.LocalDate;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,6 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RequestTester {
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private PatientService patientService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -39,20 +49,31 @@ public class RequestTester {
         return account;
     }
 
+    public Patient createTestPatient() {
+        return patientService.createPatientProfile("John", "Doe", Sex.MALE, LocalDate.now(), account.getEmail());
+    }
+
     public String authenticateAccount() throws Exception {
         assert account != null;
         var request = post("/login").contentType(MediaType.APPLICATION_JSON)
-            .with(httpBasic(account.getUsername(), "password"));
+                .with(httpBasic(account.getUsername(), "password"));
         jwtToken = mockMvc.perform(request).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         return jwtToken;
     }
 
-    public RequestBuilder authenticatedPost(String url, Object body) throws JsonProcessingException {
+    MockHttpServletRequestBuilder addTokenToRequest(MockHttpServletRequestBuilder request) {
         assert jwtToken != null;
-        var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(body);
+        return request
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
+    }
 
-        return post(url).contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-            .content(json);
+    public RequestBuilder authenticatedPost(String url, Object body) throws JsonProcessingException {
+        var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(body);
+        return addTokenToRequest(post(url).content(json));
+    }
+
+    public RequestBuilder authenticatedGet(String url) throws JsonProcessingException {
+        return addTokenToRequest(get(url));
     }
 }
