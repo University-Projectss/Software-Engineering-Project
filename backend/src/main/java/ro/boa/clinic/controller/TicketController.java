@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ro.boa.clinic.dto.TicketCreationRequestDto;
 import ro.boa.clinic.dto.TicketDetailsResponseDto;
 import ro.boa.clinic.dto.TicketResponseDto;
+import ro.boa.clinic.dto.TicketUpdateRequestDto;
 import ro.boa.clinic.service.AccountService;
 import ro.boa.clinic.service.PatientService;
 import ro.boa.clinic.service.TicketService;
@@ -42,4 +43,14 @@ public class TicketController {
         var tickets = ticketService.getAuthenticatedUserTickets();
         return ResponseEntity.ok(tickets);
     }
+
+    @PostMapping(value = "/update_ticket")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public ResponseEntity<HttpStatus> updateTicket(@RequestBody TicketUpdateRequestDto ticketUpdateRequest) {
+        var patient = patientService.getAuthenticatedPatientProfile();
+        ticketService.updateTicket(ticketUpdateRequest, patient);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
+
+

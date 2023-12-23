@@ -7,6 +7,9 @@ import ro.boa.clinic.exception.DoctorSpecializationNotFound;
 import ro.boa.clinic.dto.*;
 import ro.boa.clinic.exception.TicketNotFoundException;
 import ro.boa.clinic.exception.UnauthorizedAccessException;
+import ro.boa.clinic.dto.TicketCreationRequestDto;
+import ro.boa.clinic.dto.TicketUpdateRequestDto;
+import ro.boa.clinic.exception.TicketNotFound;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Status;
 import ro.boa.clinic.model.Ticket;
@@ -101,5 +104,25 @@ public class TicketService {
                 ticket.getDescription(),
                 ticket.getSpecialization(),
                 ticket.getStatus());
+    }
+
+    public Ticket updateTicket(TicketUpdateRequestDto ticketUpdateRequest, Patient patient) {
+        log.info("Updating the ticket");
+
+        var ticket = ticketRepository.findById(ticketUpdateRequest.id());
+        if (ticket.isEmpty()) {
+            throw new TicketNotFound();
+        }
+
+        if (ticketUpdateRequest.specialization() != null) {
+            ticket.get().setSpecialization(ticketUpdateRequest.specialization());
+        }
+        if (ticketUpdateRequest.status() != null) {
+            ticket.get().setStatus(ticketUpdateRequest.status());
+        }
+        if (ticketUpdateRequest.description() != null) {
+            ticket.get().setDescription(ticketUpdateRequest.description());
+        }
+        return ticketRepository.save(ticket.get());
     }
 }
