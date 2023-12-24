@@ -15,6 +15,10 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
     private final AccountService accountService;
 
+    public boolean checkSpecializationExists(String specialization) {
+        return doctorRepository.checkSpecializationExists(specialization);
+    }
+
     @Transactional
     public Doctor createDoctorProfile(String firstName, String lastName, String specialization, String accountEmail) {
         log.info("Creating a new doctor profile");

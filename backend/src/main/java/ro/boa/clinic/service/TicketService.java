@@ -11,7 +11,6 @@ import ro.boa.clinic.exception.UnauthorizedAccessException;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Status;
 import ro.boa.clinic.model.Ticket;
-import ro.boa.clinic.repository.DoctorRepository;
 import ro.boa.clinic.repository.TicketRepository;
 
 @Service
@@ -19,11 +18,11 @@ import ro.boa.clinic.repository.TicketRepository;
 @RequiredArgsConstructor
 public class TicketService {
     private final TicketRepository ticketRepository;
-    private final DoctorRepository doctorRepository;
+    private final DoctorService doctorService;
     private final PatientService patientService;
 
     private boolean validateSpecialization(String specialization) {
-        return doctorRepository.listAllSpecializations().stream().anyMatch(specialization::equals);
+        return doctorService.checkSpecializationExists(specialization);
     }
 
     public Ticket createTicket(TicketCreationRequestDto ticketCreationRequest, Patient patient) {
