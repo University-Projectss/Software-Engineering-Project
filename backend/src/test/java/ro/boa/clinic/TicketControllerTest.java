@@ -9,11 +9,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import ro.boa.clinic.dto.TicketCreationRequestDto;
-import ro.boa.clinic.model.Patient;
-import ro.boa.clinic.model.Role;
-import ro.boa.clinic.model.Status;
-import ro.boa.clinic.model.Ticket;
+import ro.boa.clinic.model.*;
 import ro.boa.clinic.repository.TicketRepository;
+import ro.boa.clinic.service.AccountService;
+import ro.boa.clinic.service.DoctorService;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,6 +28,12 @@ public class TicketControllerTest {
     private TicketRepository ticketRepository;
 
     @Autowired
+    private DoctorService doctorService;
+
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -40,6 +46,17 @@ public class TicketControllerTest {
         requestTester.createTestAccount(Role.PATIENT);
         patient = requestTester.createTestPatient();
         requestTester.authenticateAccount();
+    }
+
+    @Test
+    void creationRequest_incorrectData_returnsError() throws Exception {
+        var account = accountService.createDoctorAccount("asd","asdas");
+        doctorService.createDoctorProfile("AAA", "AAA", "AAA", account.getEmail());
+
+        var ticketDto = new TicketCreationRequestDto("Title", "Description", "XXXXXX");
+
+        mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
+                .andExpect(status().isNotFound());
     }
 
     @Test
