@@ -65,6 +65,59 @@ public class TicketService {
         return patientProfile.getId().equals(ticket.getPatient().getId());
     }
 
+    public boolean isTicketOwnedByLoggedInDoctor(Ticket ticket) {
+        log.info("Checking that the id of the logged-in doctor is the same as " +
+                "the id of the doctor associated with the ticket");
+        var doctorProfile = doctorService.getAuthenticatedDoctorProfile();
+        return doctorProfile.getId().equals(ticket.getDoctor().getId());
+    }
+
+    public Ticket updateTicketAuthenticatedUser(TicketUpdateRequestDto ticketUpdateRequest) {
+        var role = accountService.getAuthenticatedUserAccount().getRole();
+
+        var ticket = ticketRepository.findById(ticketUpdateRequest.id());
+        if (ticket.isEmpty()) {
+            throw new TicketNotFound();
+        }
+        Ticket existingTicket = ticket.get();
+
+        switch (role) {
+            case PATIENT -> {
+                if (!isTicketOwnedByLoggedInPatient(existingTicket)) {
+                    throw new TicketNotFound();
+                }
+           }
+            case DOCTOR -> {
+                if (!isTicketOwnedByLoggedInDoctor(existingTicket)) {
+                    throw new TicketNotFound();
+                }
+           }
+        }
+
+        log.info("Updating the ticket");
+        if (ticketUpdateRequest.status() != null) {
+            existingTicket.setStatus(ticketUpdateRequest.status());
+        }
+
+        switch (role) {
+            case PATIENT -> {
+                if (ticketUpdateRequest.description() != null) {
+                    existingTicket.setDescription(ticketUpdateRequest.description());
+                }
+                if (ticketUpdateRequest.title() != null) {
+                    existingTicket.setTitle(ticketUpdateRequest.title());
+                }
+            }
+            case DOCTOR -> {
+                if (ticketUpdateRequest.specialization() != null) {
+                    existingTicket.setSpecialization(ticketUpdateRequest.specialization());
+                }
+            }
+            default -> throw new UnauthorizedAccessException();
+        }
+        return ticketRepository.save(existingTicket);
+    }
+
     public List<TicketResponseDto> getAuthenticatedUserTickets() {
         var role = accountService.getAuthenticatedUserAccount().getRole();
         switch (role) {
@@ -104,25 +157,5 @@ public class TicketService {
                 ticket.getDescription(),
                 ticket.getSpecialization(),
                 ticket.getStatus());
-    }
-
-    public Ticket updateTicket(TicketUpdateRequestDto ticketUpdateRequest, Patient patient) {
-        log.info("Updating the ticket");
-
-        var ticket = ticketRepository.findById(ticketUpdateRequest.id());
-        if (ticket.isEmpty()) {
-            throw new TicketNotFound();
-        }
-
-        if (ticketUpdateRequest.specialization() != null) {
-            ticket.get().setSpecialization(ticketUpdateRequest.specialization());
-        }
-        if (ticketUpdateRequest.status() != null) {
-            ticket.get().setStatus(ticketUpdateRequest.status());
-        }
-        if (ticketUpdateRequest.description() != null) {
-            ticket.get().setDescription(ticketUpdateRequest.description());
-        }
-        return ticketRepository.save(ticket.get());
     }
 }

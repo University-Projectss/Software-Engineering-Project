@@ -45,10 +45,9 @@ public class TicketController {
     }
 
     @PostMapping(value = "/update_ticket")
-    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    @PreAuthorize("hasRole('ROLE_PATIENT') || hasRole('ROLE_DOCTOR')")
     public ResponseEntity<HttpStatus> updateTicket(@RequestBody TicketUpdateRequestDto ticketUpdateRequest) {
-        var patient = patientService.getAuthenticatedPatientProfile();
-        ticketService.updateTicket(ticketUpdateRequest, patient);
+        ticketService.updateTicketAuthenticatedUser(ticketUpdateRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
