@@ -20,8 +20,7 @@ import ro.boa.clinic.service.PatientService;
 import java.time.LocalDate;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
@@ -71,6 +70,11 @@ public class RequestTester {
     public RequestBuilder authenticatedPost(String url, Object body) throws JsonProcessingException {
         var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(body);
         return addTokenToRequest(post(url).content(json));
+    }
+
+    public RequestBuilder authenticatedPatch(String url, Object body) throws JsonProcessingException {
+        var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(body);
+        return addTokenToRequest(patch(url).content(json));
     }
 
     public RequestBuilder authenticatedGet(String url) {

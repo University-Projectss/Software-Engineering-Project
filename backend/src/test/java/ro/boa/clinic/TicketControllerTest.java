@@ -108,7 +108,7 @@ public class TicketControllerTest {
         Status newTicketStatus = Status.CLOSED;
 
         TicketUpdateRequestDto ticketUpdateRequestDto = new TicketUpdateRequestDto(1L, newTicketTitle, newTicketDescription, Status.CLOSED, null);
-        mockMvc.perform(requestTester.authenticatedPost("/update_ticket", ticketUpdateRequestDto))
+        mockMvc.perform(requestTester.authenticatedPatch("/update_ticket", ticketUpdateRequestDto))
                 .andExpect(status().isOk());
 
         assertEquals(savedTicket.getTitle(), newTicketTitle);
