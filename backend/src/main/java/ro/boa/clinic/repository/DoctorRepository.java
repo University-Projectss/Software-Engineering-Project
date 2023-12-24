@@ -11,4 +11,7 @@ import java.util.List;
 public interface DoctorRepository extends CrudRepository<Doctor, Long> {
     @Query("select specialization from Doctor group by specialization")
     List<String> listAllSpecializations();
+
+    @Query("SELECT d FROM Doctor d JOIN Account a ON d.id = a.profile.id WHERE a.email = :email")
+    Doctor findDoctorProfileByEmail(String email);
 }

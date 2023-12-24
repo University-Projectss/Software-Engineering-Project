@@ -73,7 +73,7 @@ public class RequestTester {
         return addTokenToRequest(post(url).content(json));
     }
 
-    public RequestBuilder authenticatedGet(String url) throws JsonProcessingException {
+    public RequestBuilder authenticatedGet(String url) {
         return addTokenToRequest(get(url));
     }
 }
