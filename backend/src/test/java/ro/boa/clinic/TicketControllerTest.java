@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import ro.boa.clinic.dto.TicketCreationRequestDto;
+import ro.boa.clinic.dto.TicketUpdateRequestDto;
 import ro.boa.clinic.model.*;
 import ro.boa.clinic.repository.TicketRepository;
 import ro.boa.clinic.service.AccountService;
@@ -96,5 +97,23 @@ public class TicketControllerTest {
         mockMvc.perform(requestTester.authenticatedGet("/tickets"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(ticketList));
+    }
+
+    @Test
+    void updateTicketRequest_validId_updatesTicket() throws Exception {
+        Ticket savedTicket = ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
+
+        String newTicketTitle = "Nu vad la departare";
+        String newTicketDescription = "Ma joc toata ziua pe caluculator tomb raider";
+        Status newTicketStatus = Status.CLOSED;
+
+        TicketUpdateRequestDto ticketUpdateRequestDto = new TicketUpdateRequestDto(1L, newTicketTitle, newTicketDescription, Status.CLOSED, null);
+        mockMvc.perform(requestTester.authenticatedPost("/update_ticket", ticketUpdateRequestDto))
+                .andExpect(status().isOk());
+
+        assertEquals(savedTicket.getTitle(), newTicketTitle);
+        assertEquals(savedTicket.getDescription(), newTicketDescription);
+        assertEquals(savedTicket.getStatus(), newTicketStatus);
+
     }
 }
