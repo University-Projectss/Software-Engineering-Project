@@ -56,7 +56,7 @@ public class TicketControllerTest {
         var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
 
         mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
