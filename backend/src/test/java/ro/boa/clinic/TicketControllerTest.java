@@ -50,10 +50,10 @@ public class TicketControllerTest {
 
     @Test
     void creationRequest_incorrectData_returnsError() throws Exception {
-        var account = accountService.createDoctorAccount("asd","asdas");
-        doctorService.createDoctorProfile("AAA", "AAA", "AAA", account.getEmail());
+        var account = accountService.createDoctorAccount("user5@example.com","Password5");
+        doctorService.createDoctorProfile("John", "Doe", "Ophthalmology", account.getEmail());
 
-        var ticketDto = new TicketCreationRequestDto("Title", "Description", "XXXXXX");
+        var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
 
         mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
                 .andExpect(status().isNotFound());
