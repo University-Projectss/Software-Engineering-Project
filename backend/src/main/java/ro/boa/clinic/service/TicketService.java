@@ -22,9 +22,12 @@ public class TicketService {
     private final DoctorRepository doctorRepository;
     private final PatientService patientService;
 
+    private boolean validateSpecialization(String specialization) {
+        return doctorRepository.listAllSpecializations().stream().anyMatch(specialization::equals);
+    }
+
     public Ticket createTicket(TicketCreationRequestDto ticketCreationRequest, Patient patient) {
-        final boolean specializationExists = doctorRepository.listAllSpecializations().stream().anyMatch(s -> ticketCreationRequest.specialization().equals(s));
-        if (!specializationExists) {
+        if (!validateSpecialization(ticketCreationRequest.specialization())) {
             throw new DoctorSpecializationNotFound();
         }
 
