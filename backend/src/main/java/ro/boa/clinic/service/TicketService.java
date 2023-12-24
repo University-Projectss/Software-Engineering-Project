@@ -72,7 +72,7 @@ public class TicketService {
         return doctorProfile.getId().equals(ticket.getDoctor().getId());
     }
 
-    public Ticket updateTicketAuthenticatedUser(TicketUpdateRequestDto ticketUpdateRequest) {
+    public TicketResponseDto updateTicketAuthenticatedUser(TicketUpdateRequestDto ticketUpdateRequest) {
         var role = accountService.getAuthenticatedUserAccount().getRole();
 
         var ticket = ticketRepository.findById(ticketUpdateRequest.id());
@@ -86,12 +86,12 @@ public class TicketService {
                 if (!isTicketOwnedByLoggedInPatient(existingTicket)) {
                     throw new TicketNotFound();
                 }
-           }
+            }
             case DOCTOR -> {
                 if (!isTicketOwnedByLoggedInDoctor(existingTicket)) {
                     throw new TicketNotFound();
                 }
-           }
+            }
         }
 
         log.info("Updating the ticket");
@@ -107,15 +107,16 @@ public class TicketService {
                 if (ticketUpdateRequest.title() != null) {
                     existingTicket.setTitle(ticketUpdateRequest.title());
                 }
+                return convertTicketToPatientTicketDto(ticketRepository.save(existingTicket));
             }
             case DOCTOR -> {
                 if (ticketUpdateRequest.specialization() != null) {
                     existingTicket.setSpecialization(ticketUpdateRequest.specialization());
                 }
+                return convertTicketToDoctorTicketDto(ticketRepository.save(existingTicket));
             }
             default -> throw new UnauthorizedAccessException();
         }
-        return ticketRepository.save(existingTicket);
     }
 
     public List<TicketResponseDto> getAuthenticatedUserTickets() {

@@ -1,5 +1,6 @@
 package ro.boa.clinic.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +47,9 @@ public class TicketController {
 
     @PatchMapping(value = "/update_ticket")
     @PreAuthorize("hasRole('ROLE_PATIENT') || hasRole('ROLE_DOCTOR')")
-    public ResponseEntity<HttpStatus> updateTicket(@RequestBody TicketUpdateRequestDto ticketUpdateRequest) {
-        ticketService.updateTicketAuthenticatedUser(ticketUpdateRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<TicketResponseDto> updateTicket(@Valid @RequestBody TicketUpdateRequestDto ticketUpdateRequest) {
+        var updatedTicket = ticketService.updateTicketAuthenticatedUser(ticketUpdateRequest);
+        return ResponseEntity.ok(updatedTicket);
     }
 }
 
