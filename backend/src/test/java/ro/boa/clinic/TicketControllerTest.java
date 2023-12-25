@@ -109,7 +109,7 @@ public class TicketControllerTest {
         String newTicketDescription = "Ma joc toata ziua pe caluculator tomb raider";
         Status newTicketStatus = Status.CLOSED;
 
-        TicketUpdateRequestDto ticketUpdateRequestDto = new TicketUpdateRequestDto(Optional.of(newTicketTitle), Optional.of(newTicketDescription), Optional.of(Status.CLOSED), null);
+        TicketUpdateRequestDto ticketUpdateRequestDto = new TicketUpdateRequestDto(Optional.of(newTicketTitle), Optional.of(newTicketDescription), Optional.of(Status.CLOSED.toString()), null);
         mockMvc.perform(requestTester.authenticatedPatch("/update_ticket/" + 1L, ticketUpdateRequestDto))
                 .andExpect(status().isOk());
 

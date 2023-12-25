@@ -96,7 +96,7 @@ public class TicketService {
 
         log.info("Updating the ticket");
         if (ticketUpdateRequest.status().isPresent()) {
-            existingTicket.setStatus(ticketUpdateRequest.status().get());
+            existingTicket.setStatus(Status.valueOf(ticketUpdateRequest.status().get()));
         }
 
         switch (role) {
