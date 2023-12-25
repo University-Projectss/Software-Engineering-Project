@@ -44,5 +44,9 @@ public class Seeder implements ApplicationRunner {
         var ticketToCreate2 = new TicketCreationRequestDto("Durere de cap",
                 "Ma doare capul cand ma enervez", "Neurologie");
         ticketService.createTicket(ticketToCreate2, patient2);
+
+        var ticketToCreate3 = new TicketCreationRequestDto("Durere de masea",
+                "Ma doare maseaua cand beau apa rece", "Stomatologie");
+        ticketService.createTicket(ticketToCreate3, patient2);
     }
 }

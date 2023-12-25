@@ -3,15 +3,17 @@ package ro.boa.clinic.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ro.boa.clinic.dto.TicketCreationRequestDto;
-import ro.boa.clinic.dto.TicketDetailsResponseDto;
 import ro.boa.clinic.exception.DoctorSpecializationNotFound;
+import ro.boa.clinic.dto.*;
 import ro.boa.clinic.exception.TicketNotFoundException;
 import ro.boa.clinic.exception.UnauthorizedAccessException;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Status;
 import ro.boa.clinic.model.Ticket;
 import ro.boa.clinic.repository.TicketRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,6 +22,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final DoctorService doctorService;
     private final PatientService patientService;
+    private final AccountService accountService;
 
     private boolean validateSpecialization(String specialization) {
         return doctorService.checkSpecializationExists(specialization);
@@ -57,5 +60,46 @@ public class TicketService {
                 "the id of the patient associated with the ticket");
         var patientProfile = patientService.getAuthenticatedPatientProfile();
         return patientProfile.getId().equals(ticket.getPatient().getId());
+    }
+
+    public List<TicketResponseDto> getAuthenticatedUserTickets() {
+        var role = accountService.getAuthenticatedUserAccount().getRole();
+        switch (role) {
+            case PATIENT -> {
+                var patient = patientService.getAuthenticatedPatientProfile();
+                var tickets = ticketRepository.getTicketsByPatient(patient);
+                return tickets.stream()
+                        .map(this::convertTicketToPatientTicketDto)
+                        .collect(Collectors.toList());
+            }
+            case DOCTOR -> {
+                var doctor = doctorService.getAuthenticatedDoctorProfile();
+                var tickets = ticketRepository.getTicketsByDoctor(doctor);
+                return tickets.stream()
+                        .map(this::convertTicketToDoctorTicketDto)
+                        .collect(Collectors.toList());
+            }
+        }
+        throw new UnauthorizedAccessException();
+    }
+
+    private PatientTicketResponseDto convertTicketToPatientTicketDto(Ticket ticket) {
+        return new PatientTicketResponseDto(
+                ticket.getId(),
+                ticket.getDoctor(),
+                ticket.getTitle(),
+                ticket.getDescription(),
+                ticket.getSpecialization(),
+                ticket.getStatus());
+    }
+
+    private DoctorTicketResponseDto convertTicketToDoctorTicketDto(Ticket ticket) {
+        return new DoctorTicketResponseDto(
+                ticket.getId(),
+                ticket.getPatient(),
+                ticket.getTitle(),
+                ticket.getDescription(),
+                ticket.getSpecialization(),
+                ticket.getStatus());
     }
 }

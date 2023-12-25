@@ -14,4 +14,7 @@ public interface DoctorRepository extends CrudRepository<Doctor, Long> {
     List<String> listAllSpecializations();
 
     boolean existsDoctorBySpecialization(@Param("specialization") String specialization);
+
+    @Query("SELECT d FROM Doctor d JOIN Account a ON d.id = a.profile.id WHERE a.email = :email")
+    Doctor findDoctorProfileByEmail(String email);
 }
