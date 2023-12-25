@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ro.boa.clinic.exception.AccountAlreadyHasProfile;
+import ro.boa.clinic.exception.DoctorProfileNotFoundException;
 import ro.boa.clinic.model.Doctor;
 import ro.boa.clinic.repository.DoctorRepository;
 

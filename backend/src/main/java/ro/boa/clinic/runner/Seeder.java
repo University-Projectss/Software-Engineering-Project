@@ -37,6 +37,9 @@ public class Seeder implements ApplicationRunner {
         var account4 = accountService.createDoctorAccount("user5@example.com", "Password5");
         var doctor2 = doctorService.createDoctorProfile("Jonah", "Doe", "Neurologie", account4.getEmail());
 
+        var account5 = accountService.createDoctorAccount("user7@example.com", "Password7");
+        var doctor3 = doctorService.createDoctorProfile("Lisa", "Doe", "Stomatologie", account5.getEmail());
+
         var ticketToCreate1 = new TicketCreationRequestDto("Durere de burta",
                 "Ma doare burta cand mananc cartofi prajiti", "Gastroenterologie");
         ticketService.createTicket(ticketToCreate1, patient1);
