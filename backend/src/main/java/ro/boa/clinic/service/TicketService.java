@@ -72,10 +72,10 @@ public class TicketService {
         return doctorProfile.getId().equals(ticket.getDoctor().getId());
     }
 
-    public TicketResponseDto updateTicketAuthenticatedUser(TicketUpdateRequestDto ticketUpdateRequest) {
+    public TicketResponseDto updateTicketAuthenticatedUser(Long id, TicketUpdateRequestDto ticketUpdateRequest) {
         var role = accountService.getAuthenticatedUserAccount().getRole();
 
-        var ticket = ticketRepository.findById(ticketUpdateRequest.id());
+        var ticket = ticketRepository.findById(id);
         if (ticket.isEmpty()) {
             throw new TicketNotFound();
         }
@@ -95,23 +95,26 @@ public class TicketService {
         }
 
         log.info("Updating the ticket");
-        if (ticketUpdateRequest.status() != null) {
-            existingTicket.setStatus(ticketUpdateRequest.status());
+        if (ticketUpdateRequest.status().isPresent()) {
+            existingTicket.setStatus(ticketUpdateRequest.status().get());
         }
 
         switch (role) {
             case PATIENT -> {
-                if (ticketUpdateRequest.description() != null) {
-                    existingTicket.setDescription(ticketUpdateRequest.description());
+                if (ticketUpdateRequest.description().isPresent()) {
+                    existingTicket.setDescription(ticketUpdateRequest.description().get());
                 }
-                if (ticketUpdateRequest.title() != null) {
-                    existingTicket.setTitle(ticketUpdateRequest.title());
+                if (ticketUpdateRequest.title().isPresent()) {
+                    existingTicket.setTitle(ticketUpdateRequest.title().get());
                 }
                 return convertTicketToPatientTicketDto(ticketRepository.save(existingTicket));
             }
             case DOCTOR -> {
-                if (ticketUpdateRequest.specialization() != null) {
-                    existingTicket.setSpecialization(ticketUpdateRequest.specialization());
+                if (ticketUpdateRequest.specialization().isPresent()) {
+                    if (!validateSpecialization(ticketUpdateRequest.specialization().get())) {
+                        throw new DoctorSpecializationNotFound();
+                    }
+                    existingTicket.setSpecialization(ticketUpdateRequest.specialization().get());
                 }
                 return convertTicketToDoctorTicketDto(ticketRepository.save(existingTicket));
             }

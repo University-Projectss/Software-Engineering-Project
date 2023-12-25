@@ -16,6 +16,8 @@ import ro.boa.clinic.service.AccountService;
 import ro.boa.clinic.service.DoctorService;
 
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,7 +53,7 @@ public class TicketControllerTest {
 
     @Test
     void creationRequest_incorrectData_returnsError() throws Exception {
-        var account = accountService.createDoctorAccount("user6@example.com","Password6");
+        var account = accountService.createDoctorAccount("user6@example.com", "Password6");
         doctorService.createDoctorProfile("John", "Doe", "Ophthalmology", account.getEmail());
 
         var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
@@ -62,7 +64,7 @@ public class TicketControllerTest {
 
     @Test
     void creationRequest_validData_createsTicket() throws Exception {
-        var account = accountService.createDoctorAccount("user6@example.com","Password6");
+        var account = accountService.createDoctorAccount("user6@example.com", "Password6");
         doctorService.createDoctorProfile("John", "Doe", "Specialization", account.getEmail());
 
         var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
@@ -107,8 +109,8 @@ public class TicketControllerTest {
         String newTicketDescription = "Ma joc toata ziua pe caluculator tomb raider";
         Status newTicketStatus = Status.CLOSED;
 
-        TicketUpdateRequestDto ticketUpdateRequestDto = new TicketUpdateRequestDto(1L, newTicketTitle, newTicketDescription, Status.CLOSED, null);
-        mockMvc.perform(requestTester.authenticatedPatch("/update_ticket", ticketUpdateRequestDto))
+        TicketUpdateRequestDto ticketUpdateRequestDto = new TicketUpdateRequestDto(Optional.of(newTicketTitle), Optional.of(newTicketDescription), Optional.of(Status.CLOSED), null);
+        mockMvc.perform(requestTester.authenticatedPatch("/update_ticket/" + 1L, ticketUpdateRequestDto))
                 .andExpect(status().isOk());
 
         assertEquals(savedTicket.getTitle(), newTicketTitle);

@@ -10,7 +10,6 @@ import ro.boa.clinic.dto.TicketCreationRequestDto;
 import ro.boa.clinic.dto.TicketDetailsResponseDto;
 import ro.boa.clinic.dto.TicketResponseDto;
 import ro.boa.clinic.dto.TicketUpdateRequestDto;
-import ro.boa.clinic.service.AccountService;
 import ro.boa.clinic.service.PatientService;
 import ro.boa.clinic.service.TicketService;
 
@@ -21,7 +20,6 @@ import java.util.List;
 public class TicketController {
     private final TicketService ticketService;
     private final PatientService patientService;
-    private final AccountService accountService;
 
     @PostMapping(value = "/tickets")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
@@ -45,10 +43,10 @@ public class TicketController {
         return ResponseEntity.ok(tickets);
     }
 
-    @PatchMapping(value = "/update_ticket")
+    @PatchMapping(value = "/update_ticket/{id}")
     @PreAuthorize("hasRole('ROLE_PATIENT') || hasRole('ROLE_DOCTOR')")
-    public ResponseEntity<TicketResponseDto> updateTicket(@Valid @RequestBody TicketUpdateRequestDto ticketUpdateRequest) {
-        var updatedTicket = ticketService.updateTicketAuthenticatedUser(ticketUpdateRequest);
+    public ResponseEntity<TicketResponseDto> updateTicket(@PathVariable Long id, @Valid @RequestBody TicketUpdateRequestDto ticketUpdateRequest) {
+        var updatedTicket = ticketService.updateTicketAuthenticatedUser(id ,ticketUpdateRequest);
         return ResponseEntity.ok(updatedTicket);
     }
 }
