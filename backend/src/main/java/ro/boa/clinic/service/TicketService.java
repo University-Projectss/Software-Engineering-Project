@@ -3,6 +3,7 @@ package ro.boa.clinic.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ro.boa.clinic.exception.DoctorSpecializationNotFound;
 import ro.boa.clinic.dto.*;
 import ro.boa.clinic.exception.TicketNotFoundException;
 import ro.boa.clinic.exception.UnauthorizedAccessException;
@@ -19,11 +20,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TicketService {
     private final TicketRepository ticketRepository;
-    private final PatientService patientService;
     private final DoctorService doctorService;
+    private final PatientService patientService;
     private final AccountService accountService;
 
+    private boolean validateSpecialization(String specialization) {
+        return doctorService.checkSpecializationExists(specialization);
+    }
+
     public Ticket createTicket(TicketCreationRequestDto ticketCreationRequest, Patient patient) {
+        if (!validateSpecialization(ticketCreationRequest.specialization())) {
+            throw new DoctorSpecializationNotFound();
+        }
+
         log.info("Creating a new ticket");
         var ticket = new Ticket(patient,
                 ticketCreationRequest.title(),

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import ro.boa.clinic.dto.TicketCreationRequestDto;
 import ro.boa.clinic.model.Sex;
 import ro.boa.clinic.service.AccountService;
+import ro.boa.clinic.service.DoctorService;
 import ro.boa.clinic.service.PatientService;
 import ro.boa.clinic.service.TicketService;
 
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 public class Seeder implements ApplicationRunner {
     private final AccountService accountService;
     private final PatientService patientService;
+    private final DoctorService doctorService;
     private final TicketService ticketService;
 
     @Override
@@ -26,12 +28,21 @@ public class Seeder implements ApplicationRunner {
         var account1 = accountService.createPatientAccount("user2@example.com", "Password2");
         var patient1 = patientService.createPatientProfile("John", "Doe", Sex.MALE, LocalDate.of(2004, 1, 8), account1.getEmail());
 
+        var account2 = accountService.createPatientAccount("user3@example.com", "Password3");
+        var patient2 = patientService.createPatientProfile("Clara", "Doe", Sex.FEMALE, LocalDate.of(2004, 1, 8), account2.getEmail());
+
+        var account3 = accountService.createDoctorAccount("user4@example.com", "Password4");
+        var doctor1 = doctorService.createDoctorProfile("Lara", "Doe", "Gastroenterologie", account3.getEmail());
+
+        var account4 = accountService.createDoctorAccount("user5@example.com", "Password5");
+        var doctor2 = doctorService.createDoctorProfile("Jonah", "Doe", "Neurologie", account4.getEmail());
+
+        var account5 = accountService.createDoctorAccount("user7@example.com", "Password7");
+        var doctor3 = doctorService.createDoctorProfile("Lisa", "Doe", "Stomatologie", account5.getEmail());
+
         var ticketToCreate1 = new TicketCreationRequestDto("Durere de burta",
                 "Ma doare burta cand mananc cartofi prajiti", "Gastroenterologie");
         ticketService.createTicket(ticketToCreate1, patient1);
-
-        var account2 = accountService.createPatientAccount("user3@example.com", "Password3");
-        var patient2 = patientService.createPatientProfile("Clara", "Doe", Sex.FEMALE, LocalDate.of(2004, 1, 8), account2.getEmail());
 
         var ticketToCreate2 = new TicketCreationRequestDto("Durere de cap",
                 "Ma doare capul cand ma enervez", "Neurologie");

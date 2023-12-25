@@ -9,11 +9,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import ro.boa.clinic.dto.TicketCreationRequestDto;
-import ro.boa.clinic.model.Patient;
-import ro.boa.clinic.model.Role;
-import ro.boa.clinic.model.Status;
-import ro.boa.clinic.model.Ticket;
+import ro.boa.clinic.model.*;
 import ro.boa.clinic.repository.TicketRepository;
+import ro.boa.clinic.service.AccountService;
+import ro.boa.clinic.service.DoctorService;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -26,6 +26,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TicketControllerTest {
     @Autowired
     private TicketRepository ticketRepository;
+
+    @Autowired
+    private DoctorService doctorService;
+
+    @Autowired
+    private AccountService accountService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,7 +49,21 @@ public class TicketControllerTest {
     }
 
     @Test
+    void creationRequest_incorrectData_returnsError() throws Exception {
+        var account = accountService.createDoctorAccount("user6@example.com","Password6");
+        doctorService.createDoctorProfile("John", "Doe", "Ophthalmology", account.getEmail());
+
+        var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
+
+        mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void creationRequest_validData_createsTicket() throws Exception {
+        var account = accountService.createDoctorAccount("user6@example.com","Password6");
+        doctorService.createDoctorProfile("John", "Doe", "Specialization", account.getEmail());
+
         var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
 
         mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
