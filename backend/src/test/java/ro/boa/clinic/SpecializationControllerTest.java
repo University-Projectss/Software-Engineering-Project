@@ -31,11 +31,9 @@ public class SpecializationControllerTest {
     @Autowired
     private RequestTester requestTester;
 
-    private Account account;
-
     @BeforeAll
     public void setUp() throws Exception {
-        account = requestTester.createTestAccount(Role.PATIENT);
+        requestTester.createTestAccount(Role.PATIENT);
         requestTester.authenticateAccount();
     }
 
