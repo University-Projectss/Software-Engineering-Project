@@ -29,6 +29,10 @@ public class SpecializationService {
             " the list that I provide. If none of the specializations match, respond simply \"null\". The list of " +
             "specializations from which you can choose is: ";
 
+    public List<String> getSpecializations() {
+        return doctorRepository.listAllSpecializations();
+    }
+
     public Optional<String> detectSpecialization(String description) {
         OpenAiService service = new OpenAiService(openAiKey);
 
