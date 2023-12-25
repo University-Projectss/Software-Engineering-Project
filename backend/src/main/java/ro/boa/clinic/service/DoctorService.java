@@ -16,7 +16,7 @@ public class DoctorService {
     private final AccountService accountService;
 
     public boolean checkSpecializationExists(String specialization) {
-        return doctorRepository.checkSpecializationExists(specialization);
+        return doctorRepository.existsDoctorBySpecialization(specialization);
     }
 
     @Transactional
