@@ -76,10 +76,7 @@ public class TicketService {
         var role = accountService.getAuthenticatedUserAccount().getRole();
 
         var ticket = ticketRepository.findById(id);
-        if (ticket.isEmpty()) {
-            throw new TicketNotFound();
-        }
-        Ticket existingTicket = ticket.get();
+        Ticket existingTicket = ticket.orElseThrow(TicketNotFound::new);
 
         switch (role) {
             case PATIENT -> {
@@ -95,27 +92,20 @@ public class TicketService {
         }
 
         log.info("Updating the ticket");
-        if (ticketUpdateRequest.status().isPresent()) {
-            existingTicket.setStatus(Status.valueOf(ticketUpdateRequest.status().get()));
-        }
+        ticketUpdateRequest.status().ifPresent(status -> existingTicket.setStatus(Status.valueOf(status)));
 
         switch (role) {
             case PATIENT -> {
-                if (ticketUpdateRequest.description().isPresent()) {
-                    existingTicket.setDescription(ticketUpdateRequest.description().get());
-                }
-                if (ticketUpdateRequest.title().isPresent()) {
-                    existingTicket.setTitle(ticketUpdateRequest.title().get());
-                }
+                ticketUpdateRequest.description().ifPresent(existingTicket::setDescription);
+                ticketUpdateRequest.title().ifPresent(existingTicket::setTitle);
+
                 return convertTicketToPatientTicketDto(ticketRepository.save(existingTicket));
             }
             case DOCTOR -> {
-                if (ticketUpdateRequest.specialization().isPresent()) {
-                    if (!validateSpecialization(ticketUpdateRequest.specialization().get())) {
-                        throw new DoctorSpecializationNotFound();
-                    }
-                    existingTicket.setSpecialization(ticketUpdateRequest.specialization().get());
+                if (!validateSpecialization(ticketUpdateRequest.specialization().orElse(""))) {
+                    throw new DoctorSpecializationNotFound();
                 }
+                ticketUpdateRequest.specialization().ifPresent(existingTicket::setSpecialization);
                 return convertTicketToDoctorTicketDto(ticketRepository.save(existingTicket));
             }
             default -> throw new UnauthorizedAccessException();
