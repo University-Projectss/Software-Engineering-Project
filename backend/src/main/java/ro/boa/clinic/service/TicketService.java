@@ -7,6 +7,9 @@ import ro.boa.clinic.exception.DoctorSpecializationNotFound;
 import ro.boa.clinic.dto.*;
 import ro.boa.clinic.exception.TicketNotFoundException;
 import ro.boa.clinic.exception.UnauthorizedAccessException;
+import ro.boa.clinic.dto.TicketCreationRequestDto;
+import ro.boa.clinic.dto.TicketUpdateRequestDto;
+import ro.boa.clinic.exception.TicketNotFound;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Status;
 import ro.boa.clinic.model.Ticket;
@@ -60,6 +63,53 @@ public class TicketService {
                 "the id of the patient associated with the ticket");
         var patientProfile = patientService.getAuthenticatedPatientProfile();
         return patientProfile.getId().equals(ticket.getPatient().getId());
+    }
+
+    public boolean isTicketOwnedByLoggedInDoctor(Ticket ticket) {
+        log.info("Checking that the id of the logged-in doctor is the same as " +
+                "the id of the doctor associated with the ticket");
+        var doctorProfile = doctorService.getAuthenticatedDoctorProfile();
+        return doctorProfile.getId().equals(ticket.getDoctor().getId());
+    }
+
+    public TicketResponseDto updateTicketAuthenticatedUser(Long id, TicketUpdateRequestDto ticketUpdateRequest) {
+        var role = accountService.getAuthenticatedUserAccount().getRole();
+
+        var ticket = ticketRepository.findById(id);
+        Ticket existingTicket = ticket.orElseThrow(TicketNotFound::new);
+
+        switch (role) {
+            case PATIENT -> {
+                if (!isTicketOwnedByLoggedInPatient(existingTicket)) {
+                    throw new TicketNotFound();
+                }
+            }
+            case DOCTOR -> {
+                if (!isTicketOwnedByLoggedInDoctor(existingTicket)) {
+                    throw new TicketNotFound();
+                }
+            }
+        }
+
+        log.info("Updating the ticket");
+        ticketUpdateRequest.status().ifPresent(status -> existingTicket.setStatus(Status.valueOf(status)));
+
+        switch (role) {
+            case PATIENT -> {
+                ticketUpdateRequest.description().ifPresent(existingTicket::setDescription);
+                ticketUpdateRequest.title().ifPresent(existingTicket::setTitle);
+
+                return convertTicketToPatientTicketDto(ticketRepository.save(existingTicket));
+            }
+            case DOCTOR -> {
+                if (!validateSpecialization(ticketUpdateRequest.specialization().orElse(""))) {
+                    throw new DoctorSpecializationNotFound();
+                }
+                ticketUpdateRequest.specialization().ifPresent(existingTicket::setSpecialization);
+                return convertTicketToDoctorTicketDto(ticketRepository.save(existingTicket));
+            }
+            default -> throw new UnauthorizedAccessException();
+        }
     }
 
     public List<TicketResponseDto> getAuthenticatedUserTickets() {

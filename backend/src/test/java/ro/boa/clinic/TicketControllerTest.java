@@ -9,11 +9,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import ro.boa.clinic.dto.TicketCreationRequestDto;
+import ro.boa.clinic.dto.TicketUpdateRequestDto;
 import ro.boa.clinic.model.*;
 import ro.boa.clinic.repository.TicketRepository;
 import ro.boa.clinic.service.AccountService;
 import ro.boa.clinic.service.DoctorService;
 
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -50,7 +53,7 @@ public class TicketControllerTest {
 
     @Test
     void creationRequest_incorrectData_returnsError() throws Exception {
-        var account = accountService.createDoctorAccount("user6@example.com","Password6");
+        var account = accountService.createDoctorAccount("user6@example.com", "Password6");
         doctorService.createDoctorProfile("John", "Doe", "Ophthalmology", account.getEmail());
 
         var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
@@ -61,7 +64,7 @@ public class TicketControllerTest {
 
     @Test
     void creationRequest_validData_createsTicket() throws Exception {
-        var account = accountService.createDoctorAccount("user6@example.com","Password6");
+        var account = accountService.createDoctorAccount("user6@example.com", "Password6");
         doctorService.createDoctorProfile("John", "Doe", "Specialization", account.getEmail());
 
         var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
@@ -96,5 +99,23 @@ public class TicketControllerTest {
         mockMvc.perform(requestTester.authenticatedGet("/tickets"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(ticketList));
+    }
+
+    @Test
+    void updateTicketRequest_validId_updatesTicket() throws Exception {
+        Ticket savedTicket = ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
+
+        String newTicketTitle = "Nu vad la departare";
+        String newTicketDescription = "Ma joc toata ziua pe caluculator tomb raider";
+        Status newTicketStatus = Status.CLOSED;
+
+        TicketUpdateRequestDto ticketUpdateRequestDto = new TicketUpdateRequestDto(Optional.of(newTicketTitle), Optional.of(newTicketDescription), Optional.of(Status.CLOSED.toString()), Optional.empty());
+        mockMvc.perform(requestTester.authenticatedPatch("/tickets/" + 1L, ticketUpdateRequestDto))
+                .andExpect(status().isOk());
+
+        assertEquals(savedTicket.getTitle(), newTicketTitle);
+        assertEquals(savedTicket.getDescription(), newTicketDescription);
+        assertEquals(savedTicket.getStatus(), newTicketStatus);
+
     }
 }
