@@ -1,6 +1,7 @@
 package ro.boa.clinic.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +39,8 @@ public class TicketController {
 
     @GetMapping(value = "/tickets")
     @PreAuthorize("hasRole('ROLE_PATIENT') || hasRole('ROLE_DOCTOR')")
-    public ResponseEntity<List<TicketResponseDto>> getAllTickets() {
-        var tickets = ticketService.getAuthenticatedUserTickets();
+    public ResponseEntity<List<TicketResponseDto>> getAllTickets(@RequestParam @Pattern(regexp = "^(OPENED|CLOSED)$") String status) {
+        var tickets = ticketService.getAuthenticatedUserTickets(status);
         return ResponseEntity.ok(tickets);
     }
 
