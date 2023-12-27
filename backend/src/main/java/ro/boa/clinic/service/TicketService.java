@@ -112,19 +112,19 @@ public class TicketService {
         }
     }
 
-    public List<TicketResponseDto> getAuthenticatedUserTickets(String status) {
+    public List<TicketResponseDto> getAuthenticatedUserTickets(Status status) {
         var role = accountService.getAuthenticatedUserAccount().getRole();
         switch (role) {
             case PATIENT -> {
                 var patient = patientService.getAuthenticatedPatientProfile();
-                var tickets = ticketRepository.getTicketsByPatientAndStatusIsLike(patient, Status.valueOf(status));
+                var tickets = ticketRepository.getTicketsByPatientAndStatusIsLike(patient, status);
                 return tickets.stream()
                         .map(this::convertTicketToPatientTicketDto)
                         .collect(Collectors.toList());
             }
             case DOCTOR -> {
                 var doctor = doctorService.getAuthenticatedDoctorProfile();
-                var tickets = ticketRepository.getTicketsByDoctorAndStatusIsLike(doctor, Status.valueOf(status));
+                var tickets = ticketRepository.getTicketsByDoctorAndStatusIsLike(doctor, status);
                 return tickets.stream()
                         .map(this::convertTicketToDoctorTicketDto)
                         .collect(Collectors.toList());

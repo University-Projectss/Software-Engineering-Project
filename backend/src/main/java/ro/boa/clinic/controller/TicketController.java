@@ -1,7 +1,6 @@
 package ro.boa.clinic.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +10,7 @@ import ro.boa.clinic.dto.TicketCreationRequestDto;
 import ro.boa.clinic.dto.TicketDetailsResponseDto;
 import ro.boa.clinic.dto.TicketResponseDto;
 import ro.boa.clinic.dto.TicketUpdateRequestDto;
+import ro.boa.clinic.model.Status;
 import ro.boa.clinic.service.PatientService;
 import ro.boa.clinic.service.TicketService;
 
@@ -39,7 +39,7 @@ public class TicketController {
 
     @GetMapping(value = "/tickets")
     @PreAuthorize("hasRole('ROLE_PATIENT') || hasRole('ROLE_DOCTOR')")
-    public ResponseEntity<List<TicketResponseDto>> getAllTickets(@RequestParam @Pattern(regexp = "^(OPENED|CLOSED)$") String status) {
+    public ResponseEntity<List<TicketResponseDto>> getAllTickets(@RequestParam Status status) {
         var tickets = ticketService.getAuthenticatedUserTickets(status);
         return ResponseEntity.ok(tickets);
     }
@@ -47,7 +47,7 @@ public class TicketController {
     @PatchMapping(value = "/tickets/{id}")
     @PreAuthorize("hasRole('ROLE_PATIENT') || hasRole('ROLE_DOCTOR')")
     public ResponseEntity<TicketResponseDto> updateTicket(@PathVariable Long id, @Valid @RequestBody TicketUpdateRequestDto ticketUpdateRequest) {
-        var updatedTicket = ticketService.updateTicketAuthenticatedUser(id ,ticketUpdateRequest);
+        var updatedTicket = ticketService.updateTicketAuthenticatedUser(id, ticketUpdateRequest);
         return ResponseEntity.ok(updatedTicket);
     }
 }
