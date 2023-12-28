@@ -121,10 +121,9 @@ public class TicketService {
 
                 List<Ticket> tickets;
                 if (status.isEmpty()) {
-                    tickets = ticketRepository.getTicketsByPatientAndStatusIs(patient, Status.OPENED);
-                    tickets.addAll(ticketRepository.getTicketsByPatientAndStatusIs(patient, Status.CLOSED));
+                    tickets = ticketRepository.getTicketsByPatient(patient);
                 } else {
-                    tickets = ticketRepository.getTicketsByPatientAndStatusIs(patient, status.get());
+                    tickets = ticketRepository.getTicketsByPatientAndStatus(patient, status.get());
                 }
                 return tickets.stream()
                         .map(this::convertTicketToPatientTicketDto)
@@ -135,10 +134,9 @@ public class TicketService {
 
                 List<Ticket> tickets;
                 if (status.isEmpty()) {
-                    tickets = ticketRepository.getTicketsByDoctorAndStatusIs(doctor, Status.OPENED);
-                    tickets.addAll(ticketRepository.getTicketsByDoctorAndStatusIs(doctor, Status.CLOSED));
+                    tickets = ticketRepository.getTicketsByDoctor(doctor);
                 } else {
-                    tickets = ticketRepository.getTicketsByDoctorAndStatusIs(doctor, status.get());
+                    tickets = ticketRepository.getTicketsByDoctorAndStatus(doctor, status.get());
                 }
                 return tickets.stream()
                         .map(this::convertTicketToDoctorTicketDto)

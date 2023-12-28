@@ -13,7 +13,11 @@ import java.util.List;
 public interface TicketRepository extends CrudRepository<Ticket, Long> {
     Ticket findByTitle(String title);
 
-    List<Ticket> getTicketsByDoctorAndStatusIs(Doctor doctor, Status status);
+    List<Ticket> getTicketsByDoctorAndStatus(Doctor doctor, Status status);
 
-    List<Ticket> getTicketsByPatientAndStatusIs(Patient patient, Status status);
+    List<Ticket> getTicketsByDoctor(Doctor doctor);
+
+    List<Ticket> getTicketsByPatient(Patient patient);
+
+    List<Ticket> getTicketsByPatientAndStatus(Patient patient, Status status);
 }

@@ -89,7 +89,7 @@ public class TicketControllerTest {
     }
 
     @Test
-    void ticketListRequest_validUserNullStatus_returnsTicketList() throws Exception {
+    void ticketListRequest_validUserUndefinedStatus_returnsTicketList() throws Exception {
         String ticketList = "[{\"id\":1,\"doctor\":null,\"title\":\"Title\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"status\":\"OPENED\"},"
                 + "{\"id\":2,\"doctor\":null,\"title\":\"Title1\",\"description\":\"Description1\",\"specialization\":\"Specialization1\",\"status\":\"CLOSED\"}]";
 

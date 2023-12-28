@@ -40,7 +40,7 @@ public class TicketController {
 
     @GetMapping(value = "/tickets")
     @PreAuthorize("hasRole('ROLE_PATIENT') || hasRole('ROLE_DOCTOR')")
-    public ResponseEntity<List<TicketResponseDto>> getAllTickets(@RequestParam(required = false) Optional<Status> status) {
+    public ResponseEntity<List<TicketResponseDto>> getAllTickets(@RequestParam Optional<Status> status) {
 
         var tickets = ticketService.getAuthenticatedUserTickets(status);
         return ResponseEntity.ok(tickets);
