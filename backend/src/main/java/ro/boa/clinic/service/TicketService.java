@@ -16,6 +16,7 @@ import ro.boa.clinic.model.Ticket;
 import ro.boa.clinic.repository.TicketRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -112,19 +113,31 @@ public class TicketService {
         }
     }
 
-    public List<TicketResponseDto> getAuthenticatedUserTickets() {
+    public List<TicketResponseDto> getAuthenticatedUserTickets(Optional<Status> status) {
         var role = accountService.getAuthenticatedUserAccount().getRole();
         switch (role) {
             case PATIENT -> {
                 var patient = patientService.getAuthenticatedPatientProfile();
-                var tickets = ticketRepository.getTicketsByPatient(patient);
+
+                List<Ticket> tickets;
+                if (status.isEmpty()) {
+                    tickets = ticketRepository.getTicketsByPatient(patient);
+                } else {
+                    tickets = ticketRepository.getTicketsByPatientAndStatus(patient, status.get());
+                }
                 return tickets.stream()
                         .map(this::convertTicketToPatientTicketDto)
                         .collect(Collectors.toList());
             }
             case DOCTOR -> {
                 var doctor = doctorService.getAuthenticatedDoctorProfile();
-                var tickets = ticketRepository.getTicketsByDoctor(doctor);
+
+                List<Ticket> tickets;
+                if (status.isEmpty()) {
+                    tickets = ticketRepository.getTicketsByDoctor(doctor);
+                } else {
+                    tickets = ticketRepository.getTicketsByDoctorAndStatus(doctor, status.get());
+                }
                 return tickets.stream()
                         .map(this::convertTicketToDoctorTicketDto)
                         .collect(Collectors.toList());
