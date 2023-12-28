@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import ro.boa.clinic.model.Account;
 import ro.boa.clinic.model.Patient;
@@ -67,17 +66,17 @@ public class RequestTester {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
     }
 
-    public RequestBuilder authenticatedPost(String url, Object body) throws JsonProcessingException {
+    public MockHttpServletRequestBuilder authenticatedPost(String url, Object body) throws JsonProcessingException {
         var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(body);
         return addTokenToRequest(post(url).content(json));
     }
 
-    public RequestBuilder authenticatedPatch(String url, Object body) throws JsonProcessingException {
+    public MockHttpServletRequestBuilder authenticatedPatch(String url, Object body) throws JsonProcessingException {
         var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(body);
         return addTokenToRequest(patch(url).content(json));
     }
 
-    public RequestBuilder authenticatedGet(String url) {
+    public MockHttpServletRequestBuilder authenticatedGet(String url) {
         return addTokenToRequest(get(url));
     }
 }

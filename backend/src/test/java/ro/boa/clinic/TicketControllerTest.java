@@ -19,7 +19,6 @@ import ro.boa.clinic.service.DoctorService;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -90,6 +89,19 @@ public class TicketControllerTest {
     }
 
     @Test
+    void ticketListRequest_validUserNullStatus_returnsTicketList() throws Exception {
+        String ticketList = "[{\"id\":1,\"doctor\":null,\"title\":\"Title\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"status\":\"OPENED\"},"
+                + "{\"id\":2,\"doctor\":null,\"title\":\"Title1\",\"description\":\"Description1\",\"specialization\":\"Specialization1\",\"status\":\"CLOSED\"}]";
+
+        ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
+        ticketRepository.save(new Ticket(2L, null, patient, "Title1", "Description1", "Specialization1", Status.CLOSED));
+
+        mockMvc.perform(requestTester.authenticatedGet("/tickets"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(ticketList));
+    }
+
+    @Test
     void ticketListRequest_validUser_returnsTicketList() throws Exception {
         String openedTicket = "[{\"id\":1,\"doctor\":null,\"title\":\"Title\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"status\":\"OPENED\"}]";
         String closedTicket = "[{\"id\":2,\"doctor\":null,\"title\":\"Title1\",\"description\":\"Description1\",\"specialization\":\"Specialization1\",\"status\":\"CLOSED\"}]";
@@ -98,11 +110,11 @@ public class TicketControllerTest {
         ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
         ticketRepository.save(new Ticket(2L, null, patient, "Title1", "Description1", "Specialization1", Status.CLOSED));
 
-        mockMvc.perform(requestTester.addTokenToRequest(get("/tickets")).param("status", Status.OPENED.toString()))
+        mockMvc.perform(requestTester.authenticatedGet("/tickets").param("status", Status.OPENED.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(openedTicket));
 
-        mockMvc.perform(requestTester.addTokenToRequest(get("/tickets")).param("status", Status.CLOSED.toString()))
+        mockMvc.perform(requestTester.authenticatedGet("/tickets").param("status", Status.CLOSED.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(closedTicket));
     }

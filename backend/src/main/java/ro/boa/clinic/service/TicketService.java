@@ -16,6 +16,7 @@ import ro.boa.clinic.model.Ticket;
 import ro.boa.clinic.repository.TicketRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -112,19 +113,33 @@ public class TicketService {
         }
     }
 
-    public List<TicketResponseDto> getAuthenticatedUserTickets(Status status) {
+    public List<TicketResponseDto> getAuthenticatedUserTickets(Optional<Status> status) {
         var role = accountService.getAuthenticatedUserAccount().getRole();
         switch (role) {
             case PATIENT -> {
                 var patient = patientService.getAuthenticatedPatientProfile();
-                var tickets = ticketRepository.getTicketsByPatientAndStatusIs(patient, status);
+
+                List<Ticket> tickets;
+                if (status.isEmpty()) {
+                    tickets = ticketRepository.getTicketsByPatientAndStatusIs(patient, Status.OPENED);
+                    tickets.addAll(ticketRepository.getTicketsByPatientAndStatusIs(patient, Status.CLOSED));
+                } else {
+                    tickets = ticketRepository.getTicketsByPatientAndStatusIs(patient, status.get());
+                }
                 return tickets.stream()
                         .map(this::convertTicketToPatientTicketDto)
                         .collect(Collectors.toList());
             }
             case DOCTOR -> {
                 var doctor = doctorService.getAuthenticatedDoctorProfile();
-                var tickets = ticketRepository.getTicketsByDoctorAndStatusIs(doctor, status);
+
+                List<Ticket> tickets;
+                if (status.isEmpty()) {
+                    tickets = ticketRepository.getTicketsByDoctorAndStatusIs(doctor, Status.OPENED);
+                    tickets.addAll(ticketRepository.getTicketsByDoctorAndStatusIs(doctor, Status.CLOSED));
+                } else {
+                    tickets = ticketRepository.getTicketsByDoctorAndStatusIs(doctor, status.get());
+                }
                 return tickets.stream()
                         .map(this::convertTicketToDoctorTicketDto)
                         .collect(Collectors.toList());
