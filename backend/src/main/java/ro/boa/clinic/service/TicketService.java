@@ -117,14 +117,14 @@ public class TicketService {
         switch (role) {
             case PATIENT -> {
                 var patient = patientService.getAuthenticatedPatientProfile();
-                var tickets = ticketRepository.getTicketsByPatientAndStatusIsLike(patient, status);
+                var tickets = ticketRepository.getTicketsByPatientAndStatusIs(patient, status);
                 return tickets.stream()
                         .map(this::convertTicketToPatientTicketDto)
                         .collect(Collectors.toList());
             }
             case DOCTOR -> {
                 var doctor = doctorService.getAuthenticatedDoctorProfile();
-                var tickets = ticketRepository.getTicketsByDoctorAndStatusIsLike(doctor, status);
+                var tickets = ticketRepository.getTicketsByDoctorAndStatusIs(doctor, status);
                 return tickets.stream()
                         .map(this::convertTicketToDoctorTicketDto)
                         .collect(Collectors.toList());
