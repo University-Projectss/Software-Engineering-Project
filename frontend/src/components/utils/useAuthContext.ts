@@ -56,6 +56,7 @@ export const useAuthContext = () => {
   };
 
   const logout = () => {
+    localStorage.removeItem("accesToken");
     setToken(null);
     setUser(null);
   };

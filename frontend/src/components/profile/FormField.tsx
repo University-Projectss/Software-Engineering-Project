@@ -1,23 +1,29 @@
 import { Flex, FormControl, FormLabel, Input } from "@chakra-ui/react";
-import { useState, ChangeEvent } from "react";
+import { ProfileInterface } from "./types";
 
 interface FormFieldProps {
   label: string;
-  input?: string | number;
   type: "string" | "number";
+  profile: ProfileInterface;
+  setProfile: (val: ProfileInterface) => void;
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
   label,
-  input = "",
   type,
+  profile,
+  setProfile,
 }) => {
-  const [value, setValue] = useState<string | number>(input);
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    const { value } = event.target;
-    setValue(value);
-  };
+  //get the key for the profile interface from the label
+  const profileKey: string = label
+    .split(" ")
+    .map((word, i) => {
+      const lowerCaseWord = word.toLowerCase();
+      return i === 0
+        ? word.toLowerCase()
+        : word.charAt(0).toUpperCase() + lowerCaseWord.slice(1);
+    })
+    .join("");
 
   return (
     <>
@@ -29,9 +35,14 @@ export const FormField: React.FC<FormFieldProps> = ({
           <Input
             type={type}
             name={label}
-            value={value.toString()}
+            value={profile[profileKey].toString()}
             border="none"
-            onChange={handleChange}
+            onChange={(e) => {
+              setProfile({
+                ...profile,
+                [profileKey]: e.target.value,
+              });
+            }}
             outline="none"
             textAlign="right"
           />

@@ -1,29 +1,63 @@
-import React, { FormEvent, useState } from "react";
-import { Avatar, Box, Button, Grid, GridItem, Text } from "@chakra-ui/react";
+import React, { FormEvent, useContext, useState } from "react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  Grid,
+  GridItem,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { colors } from "../../theme";
 import { Link } from "react-router-dom";
 import { FormField } from "./FormField";
-import { ProfileInterface } from "./types";
+import { ProfileInterface, defaultProfileValues, formData } from "./types";
+import { apiClient, authorise } from "../utils/apiClient";
+import { UserContext } from "../../App";
 
 export const Profile: React.FC = () => {
-  const [authState] = useState<"Login" | "Register">("Login");
-  const [profile, setProfile] = useState<ProfileInterface>({
-    fullName: "",
-    email: "",
-    dateOfBirth: "",
-    gender: "Male",
-    height: 155,
-    weight: 60,
-    knownDiseases: "Autism",
-    allergies: "",
-    pastSurgeries: "",
-    currentMedications: "",
-  });
+  const toast = useToast();
+  const auth = useContext(UserContext);
+  const [profile, setProfile] =
+    useState<ProfileInterface>(defaultProfileValues);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
-    event.preventDefault();
-    // Don't know what should go here yet
-  }
+  const handleSubmit = async () => {
+    for (let key of Object.keys(profile)) {
+      console.log(key);
+      if (profile[key] === "") {
+        toast({
+          title: "Oops",
+          description: "Please complete every field!",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+    }
+
+    await apiClient
+      .post("/patients", profile, authorise())
+      .then((res) => {
+        toast({
+          title: "Success!",
+          description: "Profile updated",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .catch((err) => {
+        toast({
+          title: err.title,
+          description: err.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  };
 
   return (
     <Box bg="gray.100" height="100vh">
@@ -65,50 +99,35 @@ export const Profile: React.FC = () => {
       <Grid templateColumns="repeat(2, 1fr)" gap={6} p={8}>
         <GridItem colSpan={1}>
           {/* Form for profile information - left half */}
-          <form onSubmit={handleSubmit}>
-            <FormField
-              label="Full Name"
-              input={profile.fullName}
-              type="string"
-            />
-            <FormField label="Email" input={profile.email} type="string" />
-
-            <br></br>
-            <br></br>
-
-            <FormField
-              label="Date of Birth"
-              input={profile.dateOfBirth}
-              type="string"
-            />
-            <FormField label="Gender" input={profile.gender} type="string" />
-            <FormField label="Height" input={profile.height} type="number" />
-            <FormField label="Weight" input={profile.weight} type="number" />
-
-            <br></br>
-            <br></br>
-
-            <FormField
-              label="Known Diseases"
-              input={profile.knownDiseases}
-              type="string"
-            />
-            <FormField
-              label="Allergies"
-              input={profile.allergies}
-              type="string"
-            />
-            <FormField
-              label="Past Surgeries"
-              input={profile.pastSurgeries}
-              type="string"
-            />
-            <FormField
-              label="Current Medications"
-              input={profile.currentMedications}
-              type="string"
-            />
-          </form>
+          <Flex direction={"column"} alignItems={"flex-end"} width={"100%"}>
+            <Flex direction={"column"} gap={2} width={"100%"}>
+              {/* a better way to render similar items using a map 
+            instead of manually writing each item */}
+              {formData.map((field) => (
+                <FormField
+                  key={field.label}
+                  label={field.label}
+                  type={field.type}
+                  profile={profile}
+                  setProfile={setProfile}
+                />
+              ))}
+            </Flex>
+            <Button
+              mt={10}
+              alignSelf={"flex-end"}
+              bg={colors.blue}
+              color="white"
+              borderRadius="20px"
+              px={10}
+              py={8}
+              fontSize="xl"
+              fontWeight="bold"
+              onClick={handleSubmit}
+            >
+              Update Profile
+            </Button>
+          </Flex>
         </GridItem>
 
         {/* Image and submit/logout button - right half */}
@@ -122,15 +141,18 @@ export const Profile: React.FC = () => {
           <img src="../../UserProfileImage.png" alt="Have a great day!" />
           <Button
             mr={20}
-            bg={colors.blue}
-            color="white"
+            colorScheme="blue"
             borderRadius="20px"
-            h="80px"
-            w="250px"
-            fontSize="3xl"
+            px={10}
+            py={8}
+            fontSize="xl"
             fontWeight="bold"
+            variant={"outline"}
+            onClick={() => {
+              auth.logout();
+            }}
           >
-            {authState === "Login" ? "Submit" : "Log Out"}
+            Log Out
           </Button>
         </GridItem>
       </Grid>
