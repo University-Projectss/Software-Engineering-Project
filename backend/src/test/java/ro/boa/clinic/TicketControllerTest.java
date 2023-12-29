@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import ro.boa.clinic.dto.TicketCreationRequestDto;
 import ro.boa.clinic.dto.TicketUpdateRequestDto;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class TicketControllerTest {
     @Autowired
     private TicketRepository ticketRepository;
@@ -89,16 +91,34 @@ public class TicketControllerTest {
     }
 
     @Test
-    void ticketListRequest_validUser_returnsTicketList() throws Exception {
+    void ticketListRequest_validUserUndefinedStatus_returnsTicketList() throws Exception {
         String ticketList = "[{\"id\":1,\"doctor\":null,\"title\":\"Title\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"status\":\"OPENED\"},"
-                + "{\"id\":2,\"doctor\":null,\"title\":\"Title1\",\"description\":\"Description1\",\"specialization\":\"Specialization1\",\"status\":\"OPENED\"}]";
+                + "{\"id\":2,\"doctor\":null,\"title\":\"Title1\",\"description\":\"Description1\",\"specialization\":\"Specialization1\",\"status\":\"CLOSED\"}]";
 
         ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
-        ticketRepository.save(new Ticket(2L, null, patient, "Title1", "Description1", "Specialization1", Status.OPENED));
+        ticketRepository.save(new Ticket(2L, null, patient, "Title1", "Description1", "Specialization1", Status.CLOSED));
 
         mockMvc.perform(requestTester.authenticatedGet("/tickets"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(ticketList));
+    }
+
+    @Test
+    void ticketListRequest_validUser_returnsTicketList() throws Exception {
+        String openedTicket = "[{\"id\":1,\"doctor\":null,\"title\":\"Title\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"status\":\"OPENED\"}]";
+        String closedTicket = "[{\"id\":2,\"doctor\":null,\"title\":\"Title1\",\"description\":\"Description1\",\"specialization\":\"Specialization1\",\"status\":\"CLOSED\"}]";
+
+
+        ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
+        ticketRepository.save(new Ticket(2L, null, patient, "Title1", "Description1", "Specialization1", Status.CLOSED));
+
+        mockMvc.perform(requestTester.authenticatedGet("/tickets").param("status", Status.OPENED.toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(openedTicket));
+
+        mockMvc.perform(requestTester.authenticatedGet("/tickets").param("status", Status.CLOSED.toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(closedTicket));
     }
 
     @Test
