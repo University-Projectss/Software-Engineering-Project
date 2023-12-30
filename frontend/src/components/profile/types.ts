@@ -8,13 +8,13 @@ export interface ProfileInterface {
 
 /// OBJECTS
 export const defaultProfileValues = {
-  firstName: "abcd",
-  lastName: "",
-  sex: "",
-  birthDate: "",
+  firstName: "Anakin",
+  lastName: "Skywalker",
+  sex: "Male",
+  birthDate: "10/11/1970",
 };
 
-export const formData: { label: string; type: "string" | "number" }[] = [
+export const formData: { label: string; type: string }[] = [
   {
     label: "First Name",
     type: "string",
@@ -30,6 +30,6 @@ export const formData: { label: string; type: "string" | "number" }[] = [
 
   {
     label: "Birth Date",
-    type: "string",
+    type: "date-local",
   },
 ];

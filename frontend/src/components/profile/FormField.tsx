@@ -3,7 +3,7 @@ import { ProfileInterface } from "./types";
 
 interface FormFieldProps {
   label: string;
-  type: "string" | "number";
+  type: string;
   profile: ProfileInterface;
   setProfile: (val: ProfileInterface) => void;
 }

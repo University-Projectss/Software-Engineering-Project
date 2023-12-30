@@ -38,12 +38,21 @@ export const Profile: React.FC = () => {
     }
 
     await apiClient
-      .post("/patients", profile, authorise())
+      .post(
+        "/patients",
+        {
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          sex: profile.sex.toUpperCase(),
+          birthdate: new Date(profile.birthDate),
+        }, //not the best way but it works for now
+        authorise()
+      )
       .then((res) => {
         toast({
           title: "Success!",
           description: "Profile updated",
-          status: "error",
+          status: "success",
           duration: 3000,
           isClosable: true,
         });
