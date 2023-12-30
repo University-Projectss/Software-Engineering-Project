@@ -77,8 +77,8 @@ export const TicketForm = () => {
       .catch((err) => {
         console.log(err);
         toast({
-          title: err.error,
-          description: err.message,
+          title: err.response.data.error,
+          description: err.response.data.message,
           status: "error",
           duration: 3000,
           isClosable: true,

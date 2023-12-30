@@ -59,8 +59,8 @@ export const Profile: React.FC = () => {
       })
       .catch((err) => {
         toast({
-          title: err.title,
-          description: err.message,
+          title: err.response.data.error,
+          description: err.response.data.message,
           status: "error",
           duration: 3000,
           isClosable: true,
