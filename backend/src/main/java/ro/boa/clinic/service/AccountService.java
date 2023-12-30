@@ -51,6 +51,11 @@ public class AccountService {
         return null;
     }
 
+    public Account getAuthenticatedUserAccount() {
+        log.info("Getting authenticated user account");
+        return accountRepository.findByEmail(getAuthenticatedUserEmail());
+    }
+
     /**
      * Links the account with the provided email to the profile, if the account has no profile associated.
      *

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { apiClient } from "./apiClient";
 import { useToast } from "@chakra-ui/react";
+import { useNavigate, useNavigation } from "react-router";
 
 export interface UserInterface {
   email: string;
@@ -56,8 +57,10 @@ export const useAuthContext = () => {
   };
 
   const logout = () => {
+    localStorage.removeItem("accesToken");
     setToken(null);
     setUser(null);
+    window.location.reload();
   };
 
   return { user, login, register, token, setToken, logout };

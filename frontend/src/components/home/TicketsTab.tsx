@@ -15,6 +15,7 @@ export const TicketsTab: React.FC<TicketsTabProps> = ({
     return (
         <Tab _selected={{ fontWeight: "bold" }}>
             <Box
+                data-testid="tickets-tab-box"
                 p={2}
                 bg="white"
                 color="black"

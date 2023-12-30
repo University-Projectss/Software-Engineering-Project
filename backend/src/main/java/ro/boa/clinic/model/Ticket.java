@@ -15,11 +15,11 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     @NonNull
     private Patient patient;
@@ -35,4 +35,9 @@ public class Ticket {
     @Column(name = "specialization")
     @NonNull
     private String specialization;
+
+    @Column(name = "status")
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    private Status status;
 }
