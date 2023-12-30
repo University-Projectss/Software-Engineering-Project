@@ -132,7 +132,7 @@ export const Profile: React.FC = () => {
               py={8}
               fontSize="xl"
               fontWeight="bold"
-              onClick={handleSubmit}
+              // onClick={handleSubmit}
             >
               Update Profile
             </Button>

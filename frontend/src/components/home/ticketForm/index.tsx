@@ -18,7 +18,7 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { colors } from "../../../theme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiClient, authorise } from "../../utils/apiClient";
 
 export const TicketForm = () => {
@@ -30,12 +30,13 @@ export const TicketForm = () => {
     title: string;
     description: string;
   }>({ title: "Ticket title", description: "" });
-  const [specializations, setSpecializations] = useState<string[]>([
-    "prima",
-    "the rock",
-    "hello",
-    "there",
-  ]);
+  const [specializations, setSpecializations] = useState<string[]>([]);
+
+  const onCloseModal = () => {
+    setSugestion(null);
+    setTicketData({ title: "Ticket title", description: "" });
+    onClose();
+  };
 
   const generateSugestion = async () => {
     setLoading(true);
@@ -48,15 +49,15 @@ export const TicketForm = () => {
         authorise()
       )
       .then((res) => {
-        setSugestion(res.data.description);
+        setSugestion(res.data.specialization);
         setLoading(false);
       })
       .catch((err) => {
         console.log(err);
         setLoading(false);
         toast({
-          title: err.error,
-          description: err.message,
+          title: err.response.data.error,
+          description: err.response.data.message,
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -74,6 +75,16 @@ export const TicketForm = () => {
         },
         authorise()
       )
+      .then(() => {
+        onCloseModal();
+        toast({
+          title: "Success",
+          description: "Ticket created",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
       .catch((err) => {
         console.log(err);
         toast({
@@ -85,6 +96,17 @@ export const TicketForm = () => {
         });
       });
   };
+
+  useEffect(() => {
+    apiClient
+      .get("/specializations", authorise())
+      .then((res: any) => {
+        setSpecializations(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   return (
     <>
@@ -102,7 +124,7 @@ export const TicketForm = () => {
         Open Ticket
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} size={"xl"}>
+      <Modal isOpen={isOpen} onClose={onCloseModal} size={"xl"}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader
@@ -166,6 +188,9 @@ export const TicketForm = () => {
                   placeholder="Choose yourself"
                   variant={"flushed"}
                   width={"50%"}
+                  onChange={(e) => {
+                    setSugestion(e.target.value);
+                  }}
                 >
                   {specializations.map((s) => (
                     <option key={s} value={s}>
