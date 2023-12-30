@@ -5,6 +5,7 @@ import { Home } from "./components/home";
 import { NotFound } from "./components/notFound";
 import { Auth } from "./components/auth";
 import { Flex, Spinner } from "@chakra-ui/react";
+import { Profile } from "./components/profile";
 
 export const RouterComponent = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -26,6 +27,7 @@ export const RouterComponent = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="*" element={<NotFound />} />
+      <Route path="/profile" element={<Profile /> } />
     </Routes>
   ) : (
     <Routes>
