@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ro.boa.clinic.exception.AccountDoesNotExist;
 import ro.boa.clinic.model.Account;
 import ro.boa.clinic.model.Profile;
 import ro.boa.clinic.model.Role;
@@ -53,7 +54,7 @@ public class AccountService {
 
     public Account getAuthenticatedUserAccount() {
         log.info("Getting authenticated user account");
-        return accountRepository.findByEmail(getAuthenticatedUserEmail());
+        return accountRepository.findByEmail(getAuthenticatedUserEmail()).orElseThrow(AccountDoesNotExist::new);
     }
 
     /**
