@@ -14,6 +14,8 @@ import ro.boa.clinic.model.Profile;
 import ro.boa.clinic.model.Role;
 import ro.boa.clinic.repository.AccountRepository;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -41,6 +43,10 @@ public class AccountService {
         Account newAccount = new Account(email, hashedPassword, role);
 
         return accountRepository.save(newAccount);
+    }
+
+    public Optional<Account> findAccountByEmail(String email) {
+        return accountRepository.findByEmail(email);
     }
 
     public String getAuthenticatedUserEmail() {
