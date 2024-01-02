@@ -8,10 +8,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ro.boa.clinic.exception.AccountDoesNotExist;
 import ro.boa.clinic.model.Account;
 import ro.boa.clinic.model.Profile;
 import ro.boa.clinic.model.Role;
 import ro.boa.clinic.repository.AccountRepository;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -42,6 +45,10 @@ public class AccountService {
         return accountRepository.save(newAccount);
     }
 
+    public Optional<Account> findAccountByEmail(String email) {
+        return accountRepository.findByEmail(email);
+    }
+
     public String getAuthenticatedUserEmail() {
         log.info("Getting authenticated user account");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -53,7 +60,7 @@ public class AccountService {
 
     public Account getAuthenticatedUserAccount() {
         log.info("Getting authenticated user account");
-        return accountRepository.findByEmail(getAuthenticatedUserEmail());
+        return accountRepository.findByEmail(getAuthenticatedUserEmail()).orElseThrow(AccountDoesNotExist::new);
     }
 
     /**
