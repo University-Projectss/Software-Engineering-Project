@@ -10,6 +10,7 @@ export const UserContext = createContext<ContextInterface>({
   token: null,
   setToken: (val: string) => {},
   user: null,
+  setUser: () => {},
   login: () => {},
   register: () => {},
   logout: () => {},

@@ -44,7 +44,7 @@ export const Home: React.FC = () => {
   const numOpenedTickets = openedTickets.length;
   const numClosedTickets = closedTickets.length;
 
-  const [hasProfile, setHasProfile] = useState<boolean>(false);
+  const [hasProfile, setHasProfile] = useState<boolean>(true);
   const [profile, setProfile] =
     useState<ProfileInterface>(defaultProfileValues);
 
@@ -53,7 +53,11 @@ export const Home: React.FC = () => {
     apiClient
       .get("/patients/0", authorise())
       .then((res) => {
-        console.log(res);
+        console.log(res.data);
+        auth.setUser({
+          ...auth.user,
+          ...res.data,
+        });
         setHasProfile(true);
       })
       .catch((err) => {
@@ -131,6 +135,7 @@ export const Home: React.FC = () => {
           duration: 3000,
           isClosable: true,
         });
+        window.location.reload();
       })
       .catch((err) => {
         toast({
@@ -230,8 +235,8 @@ export const Home: React.FC = () => {
       >
         {/* Greeting Text */}
         <Text fontSize="4xl" fontWeight="bold" color="black" pl={10}>
-          {/* {`Hello ${auth.user?.email},`} */}
-          Hello,
+          {`Hello ${auth.user?.firstName},`}
+          {/* Hello, */}
           <br />
           we wish you a wonderful day!
         </Text>

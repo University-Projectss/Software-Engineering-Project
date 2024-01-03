@@ -3,12 +3,18 @@ import { apiClient } from "./apiClient";
 import { useToast } from "@chakra-ui/react";
 
 export interface UserInterface {
+  id: number;
+  firstName: string;
+  lastName: string;
+  birthdate: string;
+  sex: string;
   email: string;
   role: string;
 }
 
 export interface ContextInterface {
   user: UserInterface | null;
+  setUser: (user: UserInterface | null) => void;
   login: (email: string, password: string) => void;
   register: (email: string, password: string) => void;
   logout: () => void;
@@ -63,5 +69,5 @@ export const useAuthContext = () => {
     window.location.replace("http://localhost:3000/");
   };
 
-  return { user, login, register, token, setToken, logout, setUser };
+  return { user, setUser, login, register, token, setToken, logout };
 };
