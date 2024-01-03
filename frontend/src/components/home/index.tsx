@@ -120,7 +120,7 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <Box bg="gray.100" height="100vh">
+    <Box bg="gray.100" minH="100vh">
       {/* Create profile modal */}
       <Modal
         isOpen={false}

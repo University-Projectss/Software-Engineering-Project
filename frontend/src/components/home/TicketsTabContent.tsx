@@ -18,7 +18,7 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
       <Text fontSize="4xl" fontWeight="bold" color="black" pl={10}>
         {text}
       </Text>
-      <Flex mt={4} pl={10}>
+      <Flex mt={4} pl={10} wrap={"wrap"}>
         {tickets.length > 0 ? (
           tickets.map((ticket, i) => (
             <Box key={i} mr={4}>

@@ -59,7 +59,7 @@ export const Ticket: React.FC<TicketProps> = ({ ticket }) => {
       {/* Ticket content */}
       <Box>
         <Text fontSize="lg" fontWeight="bold" color="black">
-          Dr. {ticket.doctor ?? ""}
+          Dr. {ticket.doctor ?? "Who?"}
         </Text>
         {/* <Text fontSize="md" color="black"> */}
         {/* Date:{" "}
