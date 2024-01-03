@@ -4,6 +4,7 @@ import { useToast } from "@chakra-ui/react";
 
 export interface UserInterface {
   email: string;
+  role: string;
 }
 
 export interface ContextInterface {

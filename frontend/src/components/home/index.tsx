@@ -50,7 +50,29 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     //check if the user profile exists
+    apiClient
+      .get("/accounts/0", authorise())
+      .then((res) => {
+        console.log(res);
+        setHasProfile(true);
+      })
+      .catch((err) => {
+        if (err.response.data.status === 404) {
+          setHasProfile(false);
+        }
+        console.log(err);
+        toast({
+          title: err.response.data.error,
+          description: err.response.data.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  }, []);
 
+  //get the card only if ther user has a profile
+  useEffect(() => {
     setLoading(true);
     apiClient
       .get("/tickets", authorise())
@@ -123,7 +145,7 @@ export const Home: React.FC = () => {
     <Box bg="gray.100" minH="100vh">
       {/* Create profile modal */}
       <Modal
-        isOpen={false}
+        isOpen={!hasProfile}
         closeOnOverlayClick={false}
         closeOnEsc={false}
         onClose={() => {
