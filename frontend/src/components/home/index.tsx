@@ -51,7 +51,7 @@ export const Home: React.FC = () => {
   useEffect(() => {
     //check if the user profile exists
     apiClient
-      .get("/accounts/0", authorise())
+      .get("/patients/0", authorise())
       .then((res) => {
         console.log(res);
         setHasProfile(true);
@@ -73,25 +73,27 @@ export const Home: React.FC = () => {
 
   //get the card only if ther user has a profile
   useEffect(() => {
-    setLoading(true);
-    apiClient
-      .get("/tickets", authorise())
-      .then((res) => {
-        setTickets(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast({
-          title: err.response.data.error,
-          description: err.response.data.message,
-          status: "error",
-          duration: 3000,
-          isClosable: true,
+    if (hasProfile) {
+      setLoading(true);
+      apiClient
+        .get("/tickets", authorise())
+        .then((res) => {
+          setTickets(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+          toast({
+            title: err.response.data.error,
+            description: err.response.data.message,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        })
+        .finally(() => {
+          setLoading(false);
         });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    }
   }, []);
 
   const handleCreateProfile = async () => {
