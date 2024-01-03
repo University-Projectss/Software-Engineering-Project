@@ -4,13 +4,19 @@ import {
   Text,
   Divider,
   Flex,
-  Button,
   Avatar,
   Tabs,
   TabList,
   TabPanels,
-  useToast,
   Spinner,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  Button,
+  useToast,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../../App";
@@ -19,20 +25,32 @@ import { TicketsTabContent } from "./TicketsTabContent";
 import { colors } from "../../theme";
 import { apiClient, authorise } from "../utils/apiClient";
 import { TicketInterface } from "./types";
+import { TicketForm } from "./ticketForm";
+import {
+  ProfileInterface,
+  defaultProfileValues,
+  formData,
+} from "../profile/types";
+import { FormField } from "../profile/FormField";
 
 export const Home: React.FC = () => {
   const auth = useContext(UserContext);
   const toast = useToast();
   const [tickets, setTickets] = useState<TicketInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
   const openedTickets = tickets.filter((ticket) => ticket.status === "OPENED");
   const closedTickets = tickets.filter((ticket) => ticket.status === "CLOSED");
 
   const numOpenedTickets = openedTickets.length;
   const numClosedTickets = closedTickets.length;
 
+  const [hasProfile, setHasProfile] = useState<boolean>(false);
+  const [profile, setProfile] =
+    useState<ProfileInterface>(defaultProfileValues);
+
   useEffect(() => {
+    //check if the user profile exists
+
     setLoading(true);
     apiClient
       .get("/tickets", authorise())
@@ -54,8 +72,95 @@ export const Home: React.FC = () => {
       });
   }, []);
 
+  const handleCreateProfile = async () => {
+    for (let key of Object.keys(profile)) {
+      console.log(key);
+      if (profile[key] === "") {
+        toast({
+          title: "Oops",
+          description: "Please complete every field!",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+    }
+
+    await apiClient
+      .post(
+        "/patients",
+        {
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          sex: profile.sex.toUpperCase(),
+          birthdate: new Date(profile.birthDate),
+        }, //not the best way but it works for now
+        authorise()
+      )
+      .then((res) => {
+        setHasProfile(true);
+        toast({
+          title: "Success!",
+          description: "Profile created",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .catch((err) => {
+        toast({
+          title: err.response.data.error,
+          description: err.response.data.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  };
+
   return (
     <Box bg="gray.100" height="100vh">
+      {/* Create profile modal */}
+      <Modal
+        isOpen={false}
+        closeOnOverlayClick={false}
+        closeOnEsc={false}
+        onClose={() => {
+          setHasProfile(true);
+        }}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Create profile</ModalHeader>
+          <ModalBody>
+            <Flex direction={"column"} gap={2} width={"100%"}>
+              {/* a better way to render similar items using a map 
+            instead of manually writing each item */}
+              {formData.map((field) => (
+                <FormField
+                  key={field.label}
+                  label={field.label}
+                  type={field.type}
+                  profile={profile}
+                  setProfile={setProfile}
+                />
+              ))}
+            </Flex>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              variant="solid"
+              onClick={handleCreateProfile}
+            >
+              Create
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       {/* Blue bar at the top */}
       <Box
         bg={colors.blue}
@@ -108,17 +213,7 @@ export const Home: React.FC = () => {
         </Text>
 
         {/* Big "Open Ticket" button */}
-        <Button
-          bg={colors.blue}
-          color="white"
-          borderRadius="20px"
-          h="80px"
-          w="250px"
-          fontSize="3xl"
-          fontWeight="bold"
-        >
-          Open Ticket
-        </Button>
+        <TicketForm />
       </Flex>
 
       <Tabs>
