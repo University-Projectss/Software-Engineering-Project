@@ -7,8 +7,10 @@ import org.springframework.data.repository.query.Param;
 import ro.boa.clinic.model.Account;
 import ro.boa.clinic.model.Profile;
 
+import java.util.Optional;
+
 public interface AccountRepository extends CrudRepository<Account, Long> {
-    Account findByEmail(String email);
+    Optional<Account> findByEmail(String email);
 
     @Modifying
     @Query("update Account set profile = :profile where email = :email and profile = null")

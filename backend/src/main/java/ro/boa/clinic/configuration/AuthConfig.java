@@ -42,6 +42,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import ro.boa.clinic.exception.AccountDoesNotExist;
 import ro.boa.clinic.repository.AccountRepository;
 
 import java.security.interfaces.RSAPrivateKey;
@@ -80,7 +81,7 @@ public class AuthConfig {
 
     @Bean
     UserDetailsService users(AccountRepository accountRepository) {
-        return accountRepository::findByEmail;
+        return email -> accountRepository.findByEmail(email).orElseThrow(AccountDoesNotExist::new);
     }
 
     @Bean
