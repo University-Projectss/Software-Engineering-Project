@@ -24,7 +24,7 @@ const errorInterceptor = (val: AxiosInstance) => {
 export const authorise = () => {
   return {
     headers: {
-      Authorization: `Bearer ${getAccesToken()}`,
+      authorization: `Bearer ${getAccesToken()}`,
     },
   };
 };
