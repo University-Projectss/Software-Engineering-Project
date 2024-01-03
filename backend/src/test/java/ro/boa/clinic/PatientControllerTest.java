@@ -1,7 +1,8 @@
 package ro.boa.clinic;
 
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeAll;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import ro.boa.clinic.dto.PatientCreationRequestDto;
 import ro.boa.clinic.model.Account;
+import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Role;
 import ro.boa.clinic.repository.PatientRepository;
 
@@ -19,13 +21,14 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PatientControllerTest {
     @Autowired
     private PatientRepository patientRepository;
@@ -37,8 +40,9 @@ public class PatientControllerTest {
     private RequestTester requestTester;
 
     private Account account;
+    private Patient patientProfile;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() throws Exception {
         account = requestTester.createTestAccount(Role.PATIENT);
         requestTester.authenticateAccount();
@@ -74,12 +78,27 @@ public class PatientControllerTest {
 
         mockMvc.perform(existingPatientRequest).andExpect(status().isCreated());
         mockMvc.perform(newPatientRequest)
-            .andExpect(status().isBadRequest())
-            .andExpect(status().reason("Account already has profile"));
+               .andExpect(status().isBadRequest())
+               .andExpect(status().reason("Account already has profile"));
 
         assertNotEquals(
-            newPatientDto.firstName(),
-            patientRepository.findPatientProfileByEmail(account.getEmail()).getFirstName()
+                newPatientDto.firstName(),
+                patientRepository.findPatientProfileByEmail(account.getEmail()).getFirstName()
         );
+    }
+
+    @Test
+    void detailsRequest_authenticated_returnsDetails() throws Exception {
+        patientProfile = requestTester.createTestPatient();
+        String expectedJson = new JSONObject()
+                .put("id", patientProfile.getId())
+                .put("firstName", patientProfile.getFirstName())
+                .put("lastName", patientProfile.getLastName())
+                .put("sex", patientProfile.getSex().name())
+                .put("birthdate", patientProfile.getBirthdate())
+                .toString();
+
+        mockMvc.perform(requestTester.authenticatedGet("/patients/0")).andExpect(status().isOk())
+               .andExpect(content().json(expectedJson));
     }
 }
