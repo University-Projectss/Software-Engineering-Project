@@ -26,7 +26,7 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
             </Box>
           ))
         ) : (
-          <Text>{`No ${text.toLowerCase()} tickets`}</Text>
+          <Text>{`No ${text.toLowerCase()}`}</Text>
         )}
       </Flex>
     </TabPanel>

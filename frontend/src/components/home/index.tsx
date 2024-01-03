@@ -65,13 +65,6 @@ export const Home: React.FC = () => {
           setHasProfile(false);
         }
         console.log(err);
-        toast({
-          title: err.response.data.error,
-          description: err.response.data.message,
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
       });
   }, []);
 
@@ -86,13 +79,6 @@ export const Home: React.FC = () => {
         })
         .catch((err) => {
           console.log(err);
-          toast({
-            title: err.response.data.error,
-            description: err.response.data.message,
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
         })
         .finally(() => {
           setLoading(false);
