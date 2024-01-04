@@ -1,4 +1,4 @@
-import React, { FormEvent, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Avatar,
   Box,
@@ -12,15 +12,19 @@ import {
 import { colors } from "../../theme";
 import { Link } from "react-router-dom";
 import { FormField } from "./FormField";
-import { ProfileInterface, defaultProfileValues, formData } from "./types";
+import { ProfileInterface, formData } from "./types";
 import { apiClient, authorise } from "../utils/apiClient";
 import { UserContext } from "../../App";
 
 export const Profile: React.FC = () => {
   const toast = useToast();
   const auth = useContext(UserContext);
-  const [profile, setProfile] =
-    useState<ProfileInterface>(defaultProfileValues);
+  const [profile, setProfile] = useState<ProfileInterface>({
+    firstName: auth.user?.firstName ?? "Anakin",
+    lastName: auth.user?.lastName ?? "Skywalker",
+    sex: auth.user?.sex ?? "MALE",
+    birthDate: auth.user?.birthdate ?? "10/11/1970",
+  });
 
   const handleSubmit = async () => {
     for (let key of Object.keys(profile)) {

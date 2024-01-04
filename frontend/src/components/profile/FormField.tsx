@@ -29,7 +29,7 @@ export const FormField: React.FC<FormFieldProps> = ({
     <>
       <FormControl mt={1}>
         <Flex>
-          <FormLabel whiteSpace="nowrap" fontWeight="bold" fontSize="x-large">
+          <FormLabel whiteSpace="nowrap" fontWeight="bold" fontSize="large">
             {label + ": "}
           </FormLabel>
           <Input

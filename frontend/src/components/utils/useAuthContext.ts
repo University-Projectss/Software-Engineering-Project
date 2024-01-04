@@ -1,14 +1,20 @@
 import { useState } from "react";
 import { apiClient } from "./apiClient";
 import { useToast } from "@chakra-ui/react";
-import { useNavigate, useNavigation } from "react-router";
 
 export interface UserInterface {
+  id: number;
+  firstName: string;
+  lastName: string;
+  birthdate: string;
+  sex: string;
   email: string;
+  role: string;
 }
 
 export interface ContextInterface {
   user: UserInterface | null;
+  setUser: (user: UserInterface | null) => void;
   login: (email: string, password: string) => void;
   register: (email: string, password: string) => void;
   logout: () => void;
@@ -60,8 +66,8 @@ export const useAuthContext = () => {
     localStorage.removeItem("accesToken");
     setToken(null);
     setUser(null);
-    window.location.reload();
+    window.location.replace("/");
   };
 
-  return { user, login, register, token, setToken, logout };
+  return { user, setUser, login, register, token, setToken, logout };
 };

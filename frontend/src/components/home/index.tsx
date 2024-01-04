@@ -8,13 +8,13 @@ import {
   Tabs,
   TabList,
   TabPanels,
+  Spinner,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   Button,
   useToast,
 } from "@chakra-ui/react";
@@ -23,6 +23,8 @@ import { UserContext } from "../../App";
 import { TicketsTab } from "./TicketsTab";
 import { TicketsTabContent } from "./TicketsTabContent";
 import { colors } from "../../theme";
+import { apiClient, authorise } from "../utils/apiClient";
+import { TicketInterface } from "./types";
 import { TicketForm } from "./ticketForm";
 import {
   ProfileInterface,
@@ -30,67 +32,61 @@ import {
   formData,
 } from "../profile/types";
 import { FormField } from "../profile/FormField";
-import { apiClient, authorise } from "../utils/apiClient";
 
 export const Home: React.FC = () => {
   const auth = useContext(UserContext);
   const toast = useToast();
-
-  // Sample tickets data
-  const tickets = [
-    {
-      id: 1,
-      doctorName: "Matei Biciusca",
-      date: "23-10-2023",
-      userRequest:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      status: "opened" as const,
-      specialization: "Urology",
-    },
-    {
-      id: 2,
-      doctorName: "Roaianu Robert",
-      date: "23-10-2023",
-      userRequest:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      status: "closed" as const,
-      specialization: "Cardiology",
-    },
-    {
-      id: 3,
-      doctorName: "Andrei Tava",
-      date: "23-10-2023",
-      userRequest:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      status: "opened" as const,
-      specialization: "General",
-    },
-    {
-      id: 4,
-      doctorName: "Petrica Simion",
-      date: "23-10-2023",
-      userRequest:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      status: "closed" as const,
-      specialization: "General",
-    },
-    // Add more tickets as needed
-  ];
-
-  const openedTickets = tickets.filter((ticket) => ticket.status === "opened");
-  const closedTickets = tickets.filter((ticket) => ticket.status === "closed");
+  const [tickets, setTickets] = useState<TicketInterface[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const openedTickets = tickets.filter((ticket) => ticket.status === "OPENED");
+  const closedTickets = tickets.filter((ticket) => ticket.status === "CLOSED");
 
   const numOpenedTickets = openedTickets.length;
   const numClosedTickets = closedTickets.length;
 
   const [hasProfile, setHasProfile] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
   const [profile, setProfile] =
     useState<ProfileInterface>(defaultProfileValues);
 
-  //check if the user profile exists
   useEffect(() => {
-    //api call here
+    //check if the user profile exists
+    apiClient
+      .get("/patients/0", authorise())
+      .then((res) => {
+        console.log(res.data);
+        auth.setUser({
+          ...auth.user,
+          ...res.data,
+        });
+        setHasProfile(true);
+      })
+      .catch((err) => {
+        if (err.response.data.status === 404) {
+          setHasProfile(false);
+          setOpenModal(true);
+        }
+        console.log(err);
+      });
   }, []);
+
+  //get the card only if ther user has a profile
+  useEffect(() => {
+    if (hasProfile) {
+      setLoading(true);
+      apiClient
+        .get("/tickets", authorise())
+        .then((res) => {
+          setTickets(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [hasProfile]);
 
   const handleCreateProfile = async () => {
     for (let key of Object.keys(profile)) {
@@ -127,6 +123,7 @@ export const Home: React.FC = () => {
           duration: 3000,
           isClosable: true,
         });
+        window.location.reload();
       })
       .catch((err) => {
         toast({
@@ -140,10 +137,12 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <Box bg="gray.100" height="100vh">
+    <Box bg="gray.100" minH="100vh">
       {/* Create profile modal */}
       <Modal
-        isOpen={false}
+        isCentered
+        size={"xl"}
+        isOpen={openModal}
         closeOnOverlayClick={false}
         closeOnEsc={false}
         onClose={() => {
@@ -152,7 +151,7 @@ export const Home: React.FC = () => {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Create profile</ModalHeader>
+          <ModalHeader fontSize={"x-large"}>Create profile</ModalHeader>
           <ModalBody>
             <Flex direction={"column"} gap={2} width={"100%"}>
               {/* a better way to render similar items using a map 
@@ -226,7 +225,8 @@ export const Home: React.FC = () => {
       >
         {/* Greeting Text */}
         <Text fontSize="4xl" fontWeight="bold" color="black" pl={10}>
-          {`Hello ${auth.user?.email},`}
+          {`Hello ${auth.user?.firstName ?? ""},`}
+          {/* Hello, */}
           <br />
           we wish you a wonderful day!
         </Text>
@@ -251,10 +251,16 @@ export const Home: React.FC = () => {
         <Divider borderColor="black" mt={2} mb={4} />
 
         {/* Tickets Section */}
-        <TabPanels>
-          <TicketsTabContent text="Opened Tickets" tickets={openedTickets} />
-          <TicketsTabContent text="Closed Tickets" tickets={closedTickets} />
-        </TabPanels>
+        {loading ? (
+          <Flex width={"100vw"} justify={"center"}>
+            <Spinner />
+          </Flex>
+        ) : (
+          <TabPanels>
+            <TicketsTabContent text="Opened Tickets" tickets={openedTickets} />
+            <TicketsTabContent text="Closed Tickets" tickets={closedTickets} />
+          </TabPanels>
+        )}
       </Tabs>
     </Box>
   );
