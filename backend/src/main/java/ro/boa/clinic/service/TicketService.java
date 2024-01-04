@@ -1,5 +1,6 @@
 package ro.boa.clinic.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class TicketService {
         return doctorService.checkSpecializationExists(specialization);
     }
 
+    @Transactional
     public Ticket createTicket(TicketCreationRequestDto ticketCreationRequest, Patient patient) {
         if (!validateSpecialization(ticketCreationRequest.specialization())) {
             throw new DoctorSpecializationNotFound();
@@ -43,7 +45,10 @@ public class TicketService {
                 ticketCreationRequest.description(),
                 ticketCreationRequest.specialization(),
                 Status.OPENED);
-        return ticketRepository.save(ticket);
+
+        var saved_ticket = ticketRepository.save(ticket);
+        ticketRepository.AssignDoctorToTicket(saved_ticket.getId());
+        return ticketRepository.getTicketById(saved_ticket.getId());
     }
 
     public TicketDetailsResponseDto getTicketDetails(Long id) {

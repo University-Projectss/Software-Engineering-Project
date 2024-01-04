@@ -81,6 +81,33 @@ public class TicketControllerTest {
     }
 
     @Test
+    void creationRequest_validData_AssignsTicket() throws Exception {
+        var account = accountService.createDoctorAccount("user6@example.com", "Password6");
+        var doctor = doctorService.createDoctorProfile("Danielle", "Doe", "Specialization", account.getEmail());
+
+        var account1 = accountService.createDoctorAccount("user16@example.com", "Password16");
+        var doctor1 = doctorService.createDoctorProfile("Minji", "Doe", "Specialization", account1.getEmail());
+
+        var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
+
+        mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
+                .andExpect(status().isCreated());
+
+        var createdTicket = ticketRepository.findByTitle(ticketDto.title());
+        var docId = ticketRepository.getTicketById(createdTicket.getId()).getDoctor().getId();
+        assertEquals(doctor.getId(), docId);
+
+        var ticketDto1 = new TicketCreationRequestDto("Title1", "Description", "Specialization");
+
+        mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto1))
+                .andExpect(status().isCreated());
+
+        var createdTicket1 = ticketRepository.findByTitle(ticketDto1.title());
+        var docId1 = ticketRepository.getTicketById(createdTicket1.getId()).getDoctor().getId();
+        assertEquals(doctor1.getId(), docId1);
+    }
+
+    @Test
     void detailsRequest_validId_returnsDetails() throws Exception {
         String ticketDetails = "{\"status\":\"OPENED\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"doctor\":null}";
 
