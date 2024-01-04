@@ -225,7 +225,7 @@ export const Home: React.FC = () => {
       >
         {/* Greeting Text */}
         <Text fontSize="4xl" fontWeight="bold" color="black" pl={10}>
-          {`Hello ${auth.user?.firstName},`}
+          {`Hello ${auth.user?.firstName ?? ""},`}
           {/* Hello, */}
           <br />
           we wish you a wonderful day!

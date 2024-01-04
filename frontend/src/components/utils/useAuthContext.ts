@@ -66,7 +66,7 @@ export const useAuthContext = () => {
     localStorage.removeItem("accesToken");
     setToken(null);
     setUser(null);
-    window.location.replace("http://localhost:3000/");
+    window.location.replace("/");
   };
 
   return { user, setUser, login, register, token, setToken, logout };
