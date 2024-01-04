@@ -44,7 +44,8 @@ export const Home: React.FC = () => {
   const numOpenedTickets = openedTickets.length;
   const numClosedTickets = closedTickets.length;
 
-  const [hasProfile, setHasProfile] = useState<boolean>(true);
+  const [hasProfile, setHasProfile] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
   const [profile, setProfile] =
     useState<ProfileInterface>(defaultProfileValues);
 
@@ -63,6 +64,7 @@ export const Home: React.FC = () => {
       .catch((err) => {
         if (err.response.data.status === 404) {
           setHasProfile(false);
+          setOpenModal(true);
         }
         console.log(err);
       });
@@ -84,7 +86,7 @@ export const Home: React.FC = () => {
           setLoading(false);
         });
     }
-  }, []);
+  }, [hasProfile]);
 
   const handleCreateProfile = async () => {
     for (let key of Object.keys(profile)) {
@@ -138,7 +140,9 @@ export const Home: React.FC = () => {
     <Box bg="gray.100" minH="100vh">
       {/* Create profile modal */}
       <Modal
-        isOpen={!hasProfile}
+        isCentered
+        size={"xl"}
+        isOpen={openModal}
         closeOnOverlayClick={false}
         closeOnEsc={false}
         onClose={() => {
@@ -147,7 +151,7 @@ export const Home: React.FC = () => {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Create profile</ModalHeader>
+          <ModalHeader fontSize={"x-large"}>Create profile</ModalHeader>
           <ModalBody>
             <Flex direction={"column"} gap={2} width={"100%"}>
               {/* a better way to render similar items using a map 
