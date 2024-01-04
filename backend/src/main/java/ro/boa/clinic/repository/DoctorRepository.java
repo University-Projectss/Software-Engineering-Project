@@ -17,4 +17,9 @@ public interface DoctorRepository extends CrudRepository<Doctor, Long> {
 
     @Query("SELECT d FROM Doctor d JOIN Account a ON d.id = a.profile.id WHERE a.email = :email")
     Doctor findDoctorProfileByEmail(String email);
+
+    @Query("FROM Doctor d WHERE d.specialization = :specialization ORDER BY " +
+            "(SELECT COUNT(t.id) FROM Ticket t WHERE t.doctor IS NOT NULL AND t.status = 'OPENED' AND  t.doctor = d) " +
+            "ASC LIMIT 1")
+    Doctor findFreestDoctorBySpecialization(@Param("specialization") String specialization);
 }
