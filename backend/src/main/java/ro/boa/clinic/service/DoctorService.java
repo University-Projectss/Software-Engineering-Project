@@ -31,7 +31,7 @@ public class DoctorService {
         }
         return doctorCreated;
     }
-    
+
     public Doctor getAuthenticatedDoctorProfile() {
         log.info("Getting authenticated patient profile");
         var userEmail = accountService.getAuthenticatedUserEmail();
@@ -41,5 +41,9 @@ public class DoctorService {
         } else {
             return doctorProfile;
         }
+    }
+
+    public Doctor findFreestDoctorBySpecialization(String specialization) {
+        return doctorRepository.findFreestDoctorBySpecialization(specialization);
     }
 }

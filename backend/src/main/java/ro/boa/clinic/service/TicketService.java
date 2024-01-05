@@ -1,15 +1,15 @@
 package ro.boa.clinic.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ro.boa.clinic.exception.DoctorSpecializationNotFound;
 import ro.boa.clinic.dto.*;
+import ro.boa.clinic.exception.DoctorSpecializationNotFound;
+import ro.boa.clinic.exception.TicketNotFound;
 import ro.boa.clinic.exception.TicketNotFoundException;
 import ro.boa.clinic.exception.UnauthorizedAccessException;
-import ro.boa.clinic.dto.TicketCreationRequestDto;
-import ro.boa.clinic.dto.TicketUpdateRequestDto;
-import ro.boa.clinic.exception.TicketNotFound;
+import ro.boa.clinic.model.Doctor;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Status;
 import ro.boa.clinic.model.Ticket;
@@ -32,18 +32,26 @@ public class TicketService {
         return doctorService.checkSpecializationExists(specialization);
     }
 
-    public Ticket createTicket(TicketCreationRequestDto ticketCreationRequest, Patient patient) {
+    @Transactional
+    public Ticket createTicket(TicketCreationRequestDto ticketCreationRequest, Patient patient, Doctor assignedDoctor) {
         if (!validateSpecialization(ticketCreationRequest.specialization())) {
             throw new DoctorSpecializationNotFound();
         }
 
         log.info("Creating a new ticket");
-        var ticket = new Ticket(patient,
-                ticketCreationRequest.title(),
-                ticketCreationRequest.description(),
-                ticketCreationRequest.specialization(),
-                Status.OPENED);
+        var ticket = new Ticket(assignedDoctor,
+                                patient,
+                                ticketCreationRequest.title(),
+                                ticketCreationRequest.description(),
+                                ticketCreationRequest.specialization(),
+                                Status.OPENED);
         return ticketRepository.save(ticket);
+    }
+
+    @Transactional
+    public Ticket createTicket(TicketCreationRequestDto ticketCreationRequest, Patient patient) {
+        var freestDoctor = doctorService.findFreestDoctorBySpecialization(ticketCreationRequest.specialization());
+        return createTicket(ticketCreationRequest, patient, freestDoctor);
     }
 
     public TicketDetailsResponseDto getTicketDetails(Long id) {

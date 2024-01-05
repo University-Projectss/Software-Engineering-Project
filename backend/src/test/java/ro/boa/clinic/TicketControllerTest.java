@@ -11,15 +11,17 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import ro.boa.clinic.dto.TicketCreationRequestDto;
 import ro.boa.clinic.dto.TicketUpdateRequestDto;
-import ro.boa.clinic.model.*;
+import ro.boa.clinic.model.Patient;
+import ro.boa.clinic.model.Role;
+import ro.boa.clinic.model.Status;
+import ro.boa.clinic.model.Ticket;
 import ro.boa.clinic.repository.TicketRepository;
-import ro.boa.clinic.service.AccountService;
-import ro.boa.clinic.service.DoctorService;
-
+import ro.boa.clinic.service.TicketService;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,16 +35,16 @@ public class TicketControllerTest {
     private TicketRepository ticketRepository;
 
     @Autowired
-    private DoctorService doctorService;
-
-    @Autowired
-    private AccountService accountService;
+    private TicketService ticketService;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private RequestTester requestTester;
+
+    @Autowired
+    private EntityTestUtils entityTestUtils;
 
     private Patient patient;
 
@@ -55,29 +57,43 @@ public class TicketControllerTest {
 
     @Test
     void creationRequest_incorrectData_returnsError() throws Exception {
-        var account = accountService.createDoctorAccount("user6@example.com", "Password6");
-        doctorService.createDoctorProfile("John", "Doe", "Ophthalmology", account.getEmail());
-
-        var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
+        entityTestUtils.createDoctor("Doctor", "Specialization");
+        var ticketDto = new TicketCreationRequestDto("Title", "Description", "WrongSpecialization");
 
         mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
-                .andExpect(status().isBadRequest());
+               .andExpect(status().isBadRequest());
     }
 
     @Test
     void creationRequest_validData_createsTicket() throws Exception {
-        var account = accountService.createDoctorAccount("user6@example.com", "Password6");
-        doctorService.createDoctorProfile("John", "Doe", "Specialization", account.getEmail());
-
+        entityTestUtils.createDoctor("Doctor", "Specialization");
         var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
 
         mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
-                .andExpect(status().isCreated());
+               .andExpect(status().isCreated());
+        var createdTicket = ticketRepository.findByTitle(ticketDto.title());
 
-        var createdTicket = ticketRepository.findByTitle("Title");
         assertEquals(ticketDto.title(), createdTicket.getTitle());
         assertEquals(ticketDto.description(), createdTicket.getDescription());
         assertEquals(ticketDto.specialization(), createdTicket.getSpecialization());
+    }
+
+    @Test
+    void creationRequest_validData_assignsFreestDoctor() throws Exception {
+        var doctor1 = entityTestUtils.createDoctor("Doctor1", "Specialization");
+        entityTestUtils.createDoctor("Doctor2", "OtherSpecialization");
+        var doctor3 = entityTestUtils.createDoctor("Doctor3", "Specialization");
+        var existingTicketDto = new TicketCreationRequestDto("Title1", "Description1", "Specialization");
+        ticketService.createTicket(existingTicketDto, patient, doctor1);
+        var newTicketDto = new TicketCreationRequestDto("Title2", "Description", "Specialization");
+
+        mockMvc.perform(requestTester.authenticatedPost("/tickets", newTicketDto))
+               .andExpect(status().isCreated());
+        var createdTicket = ticketRepository.findWithDoctorByTitle(newTicketDto.title()).orElseThrow();
+        var assignedDoctor = createdTicket.getDoctor();
+
+        assertNotNull(assignedDoctor);
+        assertEquals(doctor3.getId(), assignedDoctor.getId());
     }
 
     @Test

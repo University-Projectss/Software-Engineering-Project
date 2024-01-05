@@ -40,4 +40,18 @@ public class Ticket {
     @NonNull
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    public Ticket(Doctor doctor,
+                  @NonNull Patient patient,
+                  @NonNull String title,
+                  @NonNull String description,
+                  @NonNull String specialization,
+                  @NonNull Status status) {
+        this.doctor = doctor;
+        this.patient = patient;
+        this.title = title;
+        this.description = description;
+        this.specialization = specialization;
+        this.status = status;
+    }
 }
