@@ -9,11 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import ro.boa.clinic.model.Account;
-import ro.boa.clinic.model.Patient;
-import ro.boa.clinic.model.Role;
-import ro.boa.clinic.model.Sex;
+import ro.boa.clinic.model.*;
 import ro.boa.clinic.service.AccountService;
+import ro.boa.clinic.service.DoctorService;
 import ro.boa.clinic.service.PatientService;
 
 import java.time.LocalDate;
@@ -29,6 +27,9 @@ public class RequestTester {
 
     @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private DoctorService doctorService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -49,6 +50,10 @@ public class RequestTester {
 
     public Patient createTestPatient() {
         return patientService.createPatientProfile("John", "Doe", Sex.MALE, LocalDate.now(), account.getEmail());
+    }
+
+    public Doctor createTestDoctor() {
+        return doctorService.createDoctorProfile("John", "Doe", "Specialization", account.getEmail());
     }
 
     public String authenticateAccount() throws Exception {
