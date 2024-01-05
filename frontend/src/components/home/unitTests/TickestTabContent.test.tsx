@@ -61,7 +61,7 @@ describe("TicketsTabContent Component", () => {
     const sampleTabElements = screen.queryAllByText(/Sample Tab/i);
     expect(sampleTabElements.length).toBe(2); // Expect two elements
 
-    // Check if the "No sample tab tickets" message is rendered
-    expect(screen.getByText(/No sample tab tickets/i)).toBeInTheDocument();
+    // Check if the "No sample tab" message is rendered
+    expect(screen.getByText(/No sample tab/i)).toBeInTheDocument();
   });
 });
