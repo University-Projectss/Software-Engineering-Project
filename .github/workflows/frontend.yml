@@ -1,0 +1,27 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    matrix:
+      node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: npm install
+        working-directory: ./frontend/
+        run: npm ci
+      - name: tests
+        working-directory: ./frontend/
+        run: npm test
