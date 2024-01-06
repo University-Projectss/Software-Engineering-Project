@@ -98,60 +98,142 @@ public class TicketControllerPatientTest {
 
     @Test
     void detailsRequest_validId_returnsDetails() throws Exception {
-        String ticketDetails = "{\"status\":\"OPENED\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"doctor\":null}";
+        String ticketDetails = """
+                {
+                  'status': 'OPENED',
+                  'description': 'Description',
+                  'specialization': 'Specialization',
+                  'doctor': null,
+                  'response': 'Response'
+                }""";
 
-        ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
+        ticketRepository.save(new Ticket(1L,
+                                         null,
+                                         patient,
+                                         "Title",
+                                         "Description",
+                                         "Specialization",
+                                         Status.OPENED,
+                                         "Response"));
         mockMvc.perform(requestTester.authenticatedGet("/tickets/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(ticketDetails));
+               .andExpect(status().isOk())
+               .andExpect(content().json(ticketDetails));
     }
 
     @Test
-    void ticketListRequest_validUserUndefinedStatus_returnsTicketList() throws Exception {
-        String ticketList = "[{\"id\":1,\"doctor\":null,\"title\":\"Title\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"status\":\"OPENED\"},"
-                + "{\"id\":2,\"doctor\":null,\"title\":\"Title1\",\"description\":\"Description1\",\"specialization\":\"Specialization1\",\"status\":\"CLOSED\"}]";
+    void ticketListRequest_noStatusFilter_returnsAllTickets() throws Exception {
+        String ticketList = """
+                [
+                  {
+                    'id': 1,
+                    'doctor': null,
+                    'title': 'Title1',
+                    'description': 'Description1',
+                    'specialization': 'Specialization1',
+                    'status': 'OPENED'
+                  },
+                  {
+                    'id': 2,
+                    'doctor': null,
+                    'title': 'Title2',
+                    'description': 'Description2',
+                    'specialization': 'Specialization2',
+                    'status': 'CLOSED'
+                  }
+                ]""";
 
-        ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
-        ticketRepository.save(new Ticket(2L, null, patient, "Title1", "Description1", "Specialization1", Status.CLOSED));
+        ticketRepository.save(new Ticket(1L,
+                                         null,
+                                         patient,
+                                         "Title1",
+                                         "Description1",
+                                         "Specialization1",
+                                         Status.OPENED,
+                                         null));
+        ticketRepository.save(new Ticket(2L,
+                                         null,
+                                         patient,
+                                         "Title2",
+                                         "Description2",
+                                         "Specialization2",
+                                         Status.CLOSED,
+                                         null));
 
         mockMvc.perform(requestTester.authenticatedGet("/tickets"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(ticketList));
+               .andExpect(status().isOk())
+               .andExpect(content().json(ticketList));
     }
 
     @Test
-    void ticketListRequest_validUser_returnsTicketList() throws Exception {
-        String openedTicket = "[{\"id\":1,\"doctor\":null,\"title\":\"Title\",\"description\":\"Description\",\"specialization\":\"Specialization\",\"status\":\"OPENED\"}]";
-        String closedTicket = "[{\"id\":2,\"doctor\":null,\"title\":\"Title1\",\"description\":\"Description1\",\"specialization\":\"Specialization1\",\"status\":\"CLOSED\"}]";
-
-
-        ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
-        ticketRepository.save(new Ticket(2L, null, patient, "Title1", "Description1", "Specialization1", Status.CLOSED));
+    void ticketListRequest_statusFilter_returnsFilteredTicketList() throws Exception {
+        String openedTicketsJson = """
+                [
+                  {
+                    'id': 1,
+                    'doctor': null,
+                    'title': 'Title1',
+                    'description': 'Description1',
+                    'specialization': 'Specialization1',
+                    'status': 'OPENED'
+                  }
+                ]""";
+        String closedTicketsJson = """
+                [
+                  {
+                    'id': 2,
+                    'doctor': null,
+                    'title': 'Title2',
+                    'description': 'Description2',
+                    'specialization': 'Specialization2',
+                    'status': 'CLOSED'
+                  }
+                ]""";
+        ticketRepository.save(new Ticket(1L,
+                                         null,
+                                         patient,
+                                         "Title1",
+                                         "Description1",
+                                         "Specialization1",
+                                         Status.OPENED,
+                                         null));
+        ticketRepository.save(new Ticket(2L,
+                                         null,
+                                         patient,
+                                         "Title2",
+                                         "Description2",
+                                         "Specialization2",
+                                         Status.CLOSED,
+                                         null));
 
         mockMvc.perform(requestTester.authenticatedGet("/tickets").param("status", Status.OPENED.toString()))
-                .andExpect(status().isOk())
-                .andExpect(content().string(openedTicket));
-
+               .andExpect(status().isOk())
+               .andExpect(content().json(openedTicketsJson));
         mockMvc.perform(requestTester.authenticatedGet("/tickets").param("status", Status.CLOSED.toString()))
-                .andExpect(status().isOk())
-                .andExpect(content().string(closedTicket));
+               .andExpect(status().isOk())
+               .andExpect(content().json(closedTicketsJson));
     }
 
     @Test
     void updateTicketRequest_validId_updatesTicket() throws Exception {
-        Ticket savedTicket = ticketRepository.save(new Ticket(1L, null, patient, "Title", "Description", "Specialization", Status.OPENED));
-
-        String newTicketTitle = "Nu vad la departare";
-        String newTicketDescription = "Ma joc toata ziua pe caluculator tomb raider";
+        Ticket ticket = ticketRepository.save(new Ticket(patient,
+                                                         "Title",
+                                                         "Description",
+                                                         "Specialization",
+                                                         Status.OPENED));
+        String newTicketTitle = "New title";
+        String newTicketDescription = "New description";
         Status newTicketStatus = Status.CLOSED;
+        TicketUpdateRequestDto updateDto = new TicketUpdateRequestDto(newTicketTitle,
+                                                                      newTicketDescription,
+                                                                      newTicketStatus,
+                                                                      null,
+                                                                      null);
 
-        TicketUpdateRequestDto ticketUpdateRequestDto = new TicketUpdateRequestDto(Optional.of(newTicketTitle), Optional.of(newTicketDescription), Optional.of(Status.CLOSED.toString()), Optional.empty());
-        mockMvc.perform(requestTester.authenticatedPatch("/tickets/" + 1L, ticketUpdateRequestDto))
-                .andExpect(status().isOk());
+        mockMvc.perform(requestTester.authenticatedPatch("/tickets/" + ticket.getId(), updateDto))
+               .andExpect(status().isOk());
 
-        assertEquals(savedTicket.getTitle(), newTicketTitle);
-        assertEquals(savedTicket.getDescription(), newTicketDescription);
-        assertEquals(savedTicket.getStatus(), newTicketStatus);
-
+        assertEquals(newTicketTitle, ticket.getTitle());
+        assertEquals(newTicketDescription, ticket.getDescription());
+        assertEquals(newTicketStatus, ticket.getStatus());
     }
 }

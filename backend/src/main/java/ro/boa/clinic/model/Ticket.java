@@ -1,5 +1,6 @@
 package ro.boa.clinic.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,6 +41,10 @@ public class Ticket {
     @NonNull
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Column(name = "response")
+    @Nullable
+    private String response;
 
     public Ticket(Doctor doctor,
                   @NonNull Patient patient,
