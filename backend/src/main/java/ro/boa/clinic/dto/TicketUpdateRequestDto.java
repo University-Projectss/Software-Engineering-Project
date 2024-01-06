@@ -23,4 +23,10 @@ public record TicketUpdateRequestDto(Optional<String> title,
              Optional.ofNullable(specialization),
              Optional.ofNullable(response));
     }
+
+    public TicketUpdateRequestDto(@Nullable Status status,
+                                  @Nullable String specialization,
+                                  @Nullable String response) {
+        this(null, null, status, specialization, response);
+    }
 }
