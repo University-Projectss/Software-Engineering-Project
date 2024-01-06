@@ -48,22 +48,24 @@ public class DoctorControllerTest {
     }
 
     @Test
-    void updateRequest_validData_assignsFreestDoctor() throws Exception {
-        var doctor1 = entityTestUtils.createDoctor("Doctor2", "OtherSpecialization");
-
+    void updateRequest_newSpecialization_assignsNewFreestDoctor() throws Exception {
+        var newDoctor = entityTestUtils.createDoctor("NewDoctor", "NewSpecialization");
         var patient = entityTestUtils.createPatient("Dan", "Doe");
+        TicketCreationRequestDto creationDto = new TicketCreationRequestDto("Title",
+                                                                            "Description",
+                                                                            this.doctor.getSpecialization());
+        var ticket = ticketService.createTicket(creationDto, patient, this.doctor);
+        var updateTicketDto = new TicketUpdateRequestDto(Optional.empty(),
+                                                         Optional.empty(),
+                                                         Optional.empty(),
+                                                         Optional.of("NewSpecialization"));
 
-        TicketCreationRequestDto asd = new TicketCreationRequestDto("Title", "Description", "Specialization");
-        var storedTicket = ticketService.createTicket(asd, patient, doctor);
+        mockMvc.perform(requestTester.authenticatedPatch("/tickets/" + ticket.getId(), updateTicketDto))
+               .andExpect(status().isOk());
 
-        var updateTicketDto = new TicketUpdateRequestDto(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of("OtherSpecialization"));
-        mockMvc.perform(requestTester.authenticatedPatch("/tickets/" + storedTicket.getId(), updateTicketDto))
-                .andExpect(status().isOk());
-        var createdTicket = ticketService.findWithDoctorByTitle(storedTicket.getTitle()).orElseThrow();
-        var assignedDoctor = createdTicket.getDoctor();
-
+        var assignedDoctor = ticket.getDoctor();
         assertNotNull(assignedDoctor);
-        assertEquals(doctor1.getId(), assignedDoctor.getId());
+        assertEquals(newDoctor.getId(), assignedDoctor.getId());
     }
 
 }
