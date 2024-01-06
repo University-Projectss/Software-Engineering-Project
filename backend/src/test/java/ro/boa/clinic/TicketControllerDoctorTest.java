@@ -50,7 +50,7 @@ public class TicketControllerDoctorTest {
     @Test
     void updateRequest_newSpecialization_assignsNewFreestDoctor() throws Exception {
         var newDoctor = entityTestUtils.createDoctor("NewDoctor", "NewSpecialization");
-        var patient = entityTestUtils.createPatient("Dan", "Doe");
+        var patient = entityTestUtils.createPatient("Dan");
         TicketCreationRequestDto creationDto = new TicketCreationRequestDto("Title",
                                                                             "Description",
                                                                             this.doctor.getSpecialization());

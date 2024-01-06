@@ -27,8 +27,8 @@ public class EntityTestUtils {
         return doctorService.createDoctorProfile(firstName, "TestDoctor", specialization, account.getEmail());
     }
 
-    public Patient createPatient(String firstName, String lastname) {
+    public Patient createPatient(String firstName) {
         var account = createAccount(firstName + "@example.com", Role.PATIENT);
-        return patientService.createPatientProfile(firstName, lastname, Sex.FEMALE, null, account.getEmail());
+        return patientService.createPatientProfile(firstName, "testPatient", Sex.FEMALE, null, account.getEmail());
     }
 }
