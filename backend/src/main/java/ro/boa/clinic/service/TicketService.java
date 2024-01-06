@@ -115,14 +115,14 @@ public class TicketService {
                 return convertTicketToPatientTicketDto(ticketRepository.save(existingTicket));
             }
             case DOCTOR -> {
-                if (!validateSpecialization(ticketUpdateRequest.specialization().orElse(""))) {
-                    throw new DoctorSpecializationNotFound();
-                }
-
-                ticketUpdateRequest.specialization().ifPresent(s -> {
-                    if (!s.equals(existingTicket.getSpecialization())) {
-                        existingTicket.setDoctor(doctorService.findFreestDoctorBySpecialization(s));
+                ticketUpdateRequest.specialization().ifPresent(specialization -> {
+                    if (specialization.equals(existingTicket.getSpecialization())) {
+                        return;
                     }
+                    if (!validateSpecialization(specialization)) {
+                        throw new DoctorSpecializationNotFound();
+                    }
+                    existingTicket.setDoctor(doctorService.findFreestDoctorBySpecialization(specialization));
                 });
 
                 ticketUpdateRequest.specialization().ifPresent(existingTicket::setSpecialization);
