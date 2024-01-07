@@ -67,6 +67,10 @@ public class TicketService {
         }
     }
 
+    public Optional<Ticket> findWithDoctorByTitle(String title) {
+        return ticketRepository.findWithDoctorByTitle(title);
+    }
+
     public boolean isTicketOwnedByLoggedInPatient(Ticket ticket) {
         log.info("Checking that the id of the logged-in patient is the same as " +
                 "the id of the patient associated with the ticket");
@@ -111,9 +115,16 @@ public class TicketService {
                 return convertTicketToPatientTicketDto(ticketRepository.save(existingTicket));
             }
             case DOCTOR -> {
-                if (!validateSpecialization(ticketUpdateRequest.specialization().orElse(""))) {
-                    throw new DoctorSpecializationNotFound();
-                }
+                ticketUpdateRequest.specialization().ifPresent(specialization -> {
+                    if (specialization.equals(existingTicket.getSpecialization())) {
+                        return;
+                    }
+                    if (!validateSpecialization(specialization)) {
+                        throw new DoctorSpecializationNotFound();
+                    }
+                    existingTicket.setDoctor(doctorService.findFreestDoctorBySpecialization(specialization));
+                });
+
                 ticketUpdateRequest.specialization().ifPresent(existingTicket::setSpecialization);
                 return convertTicketToDoctorTicketDto(ticketRepository.save(existingTicket));
             }
