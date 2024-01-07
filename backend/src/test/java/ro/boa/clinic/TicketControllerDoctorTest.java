@@ -50,13 +50,15 @@ public class TicketControllerDoctorTest {
     @Test
     void updateRequest_validDoctor_updatesTicket() throws Exception {
         var patient = entityTestUtils.createPatient("Patient");
-        TicketCreationRequestDto creationDto = new TicketCreationRequestDto("Title",
-                                                                            "Description",
-                                                                            this.doctor.getSpecialization());
+        TicketCreationRequestDto creationDto = new TicketCreationRequestDto(
+            "Title",
+            "Description",
+            this.doctor.getSpecialization());
         var ticket = ticketService.createTicket(creationDto, patient, this.doctor);
-        var updateTicketDto = new TicketUpdateRequestDto(Status.CLOSED,
-                                                         null,
-                                                         "NewResponse");
+        var updateTicketDto = new TicketUpdateRequestDto(
+            Status.CLOSED,
+            null,
+            "NewResponse");
 
         mockMvc.perform(requestTester.authenticatedPatch("/tickets/" + ticket.getId(), updateTicketDto))
                .andExpect(status().isOk());
@@ -69,13 +71,15 @@ public class TicketControllerDoctorTest {
     void updateRequest_newSpecialization_assignsNewFreestDoctor() throws Exception {
         var newDoctor = entityTestUtils.createDoctor("NewDoctor", "NewSpecialization");
         var patient = entityTestUtils.createPatient("Dan");
-        TicketCreationRequestDto creationDto = new TicketCreationRequestDto("Title",
-                                                                            "Description",
-                                                                            this.doctor.getSpecialization());
+        TicketCreationRequestDto creationDto = new TicketCreationRequestDto(
+            "Title",
+            "Description",
+            this.doctor.getSpecialization());
         var ticket = ticketService.createTicket(creationDto, patient, this.doctor);
-        var updateTicketDto = new TicketUpdateRequestDto(null,
-                                                         "NewSpecialization",
-                                                         null);
+        var updateTicketDto = new TicketUpdateRequestDto(
+            null,
+            "NewSpecialization",
+            null);
 
         mockMvc.perform(requestTester.authenticatedPatch("/tickets/" + ticket.getId(), updateTicketDto))
                .andExpect(status().isOk());

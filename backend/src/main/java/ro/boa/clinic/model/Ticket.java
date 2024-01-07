@@ -46,12 +46,14 @@ public class Ticket {
     @Nullable
     private String response;
 
-    public Ticket(Doctor doctor,
-                  @NonNull Patient patient,
-                  @NonNull String title,
-                  @NonNull String description,
-                  @NonNull String specialization,
-                  @NonNull Status status) {
+    public Ticket(
+        Doctor doctor,
+        @NonNull Patient patient,
+        @NonNull String title,
+        @NonNull String description,
+        @NonNull String specialization,
+        @NonNull Status status
+    ) {
         this.doctor = doctor;
         this.patient = patient;
         this.title = title;

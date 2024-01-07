@@ -24,11 +24,11 @@ public class PatientController {
     @PostMapping("/patients")
     public ResponseEntity<Void> createPatientProfile(@Valid @RequestBody PatientCreationRequestDto requestDto) {
         patientService.createPatientProfile(
-                requestDto.firstName(),
-                requestDto.lastName(),
-                Sex.valueOf(requestDto.sex()),
-                requestDto.birthdate(),
-                accountService.getAuthenticatedUserEmail()
+            requestDto.firstName(),
+            requestDto.lastName(),
+            Sex.valueOf(requestDto.sex()),
+            requestDto.birthdate(),
+            accountService.getAuthenticatedUserEmail()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -37,11 +37,12 @@ public class PatientController {
     @GetMapping("/patients/0")
     public ResponseEntity<PatientDetailsDto> getCurrentPatientProfileDetails() {
         Patient patient = patientService.getAuthenticatedPatientProfile();
-        var patientDetailsDto = new PatientDetailsDto(patient.getId(),
-                                                      patient.getFirstName(),
-                                                      patient.getLastName(),
-                                                      patient.getSex().name(),
-                                                      patient.getBirthdate());
+        var patientDetailsDto = new PatientDetailsDto(
+            patient.getId(),
+            patient.getFirstName(),
+            patient.getLastName(),
+            patient.getSex().name(),
+            patient.getBirthdate());
         return ResponseEntity.ok(patientDetailsDto);
     }
 }

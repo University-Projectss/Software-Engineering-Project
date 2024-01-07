@@ -20,8 +20,13 @@ public class PatientService {
     private final AccountService accountService;
 
     @Transactional
-    public Patient createPatientProfile(String firstName, String lastName, Sex sex, LocalDate birthdate,
-                                        String accountEmail) {
+    public Patient createPatientProfile(
+        String firstName,
+        String lastName,
+        Sex sex,
+        LocalDate birthdate,
+        String accountEmail
+    ) {
         log.info("Creating a new patient profile");
         var patient = new Patient(firstName, lastName, sex, birthdate);
         var patientCreated = patientRepository.save(patient);

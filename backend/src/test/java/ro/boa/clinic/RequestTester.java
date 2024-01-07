@@ -59,16 +59,15 @@ public class RequestTester {
     public String authenticateAccount() throws Exception {
         assert account != null;
         var request = post("/login").contentType(MediaType.APPLICATION_JSON)
-                .with(httpBasic(account.getUsername(), "password"));
+                                    .with(httpBasic(account.getUsername(), "password"));
         jwtToken = mockMvc.perform(request).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         return jwtToken;
     }
 
     MockHttpServletRequestBuilder addTokenToRequest(MockHttpServletRequestBuilder request) {
         assert jwtToken != null;
-        return request
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
+        return request.contentType(MediaType.APPLICATION_JSON)
+                      .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
     }
 
     public MockHttpServletRequestBuilder authenticatedPost(String url, Object body) throws JsonProcessingException {

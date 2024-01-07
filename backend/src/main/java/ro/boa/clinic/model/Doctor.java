@@ -1,6 +1,8 @@
 package ro.boa.clinic.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,5 +23,4 @@ public class Doctor extends Profile {
 
     @Column(name = "specialization")
     private String specialization;
-
 }

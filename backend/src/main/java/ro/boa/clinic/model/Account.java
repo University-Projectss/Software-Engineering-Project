@@ -20,7 +20,7 @@ public class Account implements UserDetails {
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    protected Role role;
+    private Role role;
 
     @OneToOne
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
@@ -32,7 +32,8 @@ public class Account implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    protected Account() {}
+    protected Account() {
+    }
 
     public Account(String email, String password, Role role) {
         this.email = email;

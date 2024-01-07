@@ -53,7 +53,12 @@ public class SpecializationControllerTest {
         var doctor3 = doctorService.createDoctorProfile("Rose", "Doe", "Stomatologie", account3.getEmail());
 
         mockMvc.perform(requestTester.authenticatedGet("/specializations"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*]", containsInAnyOrder(doctor1.getSpecialization(), doctor2.getSpecialization(),doctor3.getSpecialization())));
+               .andExpect(status().isOk())
+               .andExpect(jsonPath(
+                   "$[*]",
+                   containsInAnyOrder(
+                       doctor1.getSpecialization(),
+                       doctor2.getSpecialization(),
+                       doctor3.getSpecialization())));
     }
 }

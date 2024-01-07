@@ -18,16 +18,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class SpecializationService {
-    @Value("${openai.key}")
-    private String openAiKey;
-
-    private final DoctorRepository doctorRepository;
-
     private final static String SETUP_PROMPT =
         "You are a medical specialization extractor. You will receive a description of symptoms, and you will respond" +
             " only with a specialization that best matches the description. You can only choose a specialization from" +
             " the list that I provide. If none of the specializations match, respond simply \"null\". The list of " +
             "specializations from which you can choose is: ";
+    private final DoctorRepository doctorRepository;
+    @Value("${openai.key}")
+    private String openAiKey;
 
     public List<String> getSpecializations() {
         return doctorRepository.listAllSpecializations();
@@ -39,9 +37,11 @@ public class SpecializationService {
         List<String> possibleSpecializations = listAllSpecializations();
 
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
-            .model("gpt-3.5-turbo")
-            .messages(buildModelSetupMessages(possibleSpecializations, description))
-            .build();
+                                                                       .model("gpt-3.5-turbo")
+                                                                       .messages(buildModelSetupMessages(
+                                                                           possibleSpecializations,
+                                                                           description))
+                                                                       .build();
 
         try {
             ChatCompletionResult result = service.createChatCompletion(completionRequest);
