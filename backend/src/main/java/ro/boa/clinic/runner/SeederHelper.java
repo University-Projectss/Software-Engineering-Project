@@ -22,14 +22,14 @@ public class SeederHelper {
     private final TicketService ticketService;
 
     public Patient createPatientAccountAndProfile(String firstName, String lastName, Sex sex, LocalDate dateOfBirth) {
-        var email = String.format("%s.%s@gmail.com", firstName.toLowerCase(), lastName.toLowerCase());
+        var email = String.format("%s.%s@example.com", firstName.toLowerCase(), lastName.toLowerCase());
         accountService.createPatientAccount(email, "Password1");
         return patientService.createPatientProfile(firstName, lastName, sex, dateOfBirth, email);
     }
 
     public void createDoctorAccountAndProfile(String firstName, String lastName, String specialization) {
-        var email = String.format("%s.%s@clinic.ro", firstName.toLowerCase(), lastName.toLowerCase());
-        accountService.createDoctorAccount(email, "Password2");
+        var email = String.format("%s.%s@example.com", firstName.toLowerCase(), lastName.toLowerCase());
+        accountService.createDoctorAccount(email, "Password1");
         doctorService.createDoctorProfile(firstName, lastName, specialization, email);
     }
 
