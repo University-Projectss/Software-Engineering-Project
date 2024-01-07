@@ -59,9 +59,10 @@ public class TicketService {
         if (isTicketOwnedByLoggedInPatient(ticket)) {
             log.info("Returning ticket details");
             return new TicketDetailsResponseDto(ticket.getStatus(),
-                    ticket.getDescription(),
-                    ticket.getSpecialization(),
-                    ticket.getDoctor());
+                                                ticket.getDescription(),
+                                                ticket.getSpecialization(),
+                                                ticket.getDoctor(),
+                                                ticket.getResponse());
         } else {
             throw new UnauthorizedAccessException();
         }
@@ -126,6 +127,7 @@ public class TicketService {
                 });
 
                 ticketUpdateRequest.specialization().ifPresent(existingTicket::setSpecialization);
+                ticketUpdateRequest.response().ifPresent(existingTicket::setResponse);
                 return convertTicketToDoctorTicketDto(ticketRepository.save(existingTicket));
             }
             default -> throw new UnauthorizedAccessException();

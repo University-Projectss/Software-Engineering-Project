@@ -11,10 +11,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import ro.boa.clinic.dto.TicketCreationRequestDto;
 import ro.boa.clinic.dto.TicketUpdateRequestDto;
-import ro.boa.clinic.model.*;
+import ro.boa.clinic.model.Doctor;
+import ro.boa.clinic.model.Role;
+import ro.boa.clinic.model.Status;
 import ro.boa.clinic.service.TicketService;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,6 +48,24 @@ public class TicketControllerDoctorTest {
     }
 
     @Test
+    void updateRequest_validDoctor_updatesTicket() throws Exception {
+        var patient = entityTestUtils.createPatient("Patient");
+        TicketCreationRequestDto creationDto = new TicketCreationRequestDto("Title",
+                                                                            "Description",
+                                                                            this.doctor.getSpecialization());
+        var ticket = ticketService.createTicket(creationDto, patient, this.doctor);
+        var updateTicketDto = new TicketUpdateRequestDto(Status.CLOSED,
+                                                         null,
+                                                         "NewResponse");
+
+        mockMvc.perform(requestTester.authenticatedPatch("/tickets/" + ticket.getId(), updateTicketDto))
+               .andExpect(status().isOk());
+
+        assertEquals(updateTicketDto.status().get(), ticket.getStatus().name());
+        assertEquals(updateTicketDto.response().get(), ticket.getResponse());
+    }
+
+    @Test
     void updateRequest_newSpecialization_assignsNewFreestDoctor() throws Exception {
         var newDoctor = entityTestUtils.createDoctor("NewDoctor", "NewSpecialization");
         var patient = entityTestUtils.createPatient("Dan");
@@ -55,10 +73,9 @@ public class TicketControllerDoctorTest {
                                                                             "Description",
                                                                             this.doctor.getSpecialization());
         var ticket = ticketService.createTicket(creationDto, patient, this.doctor);
-        var updateTicketDto = new TicketUpdateRequestDto(Optional.empty(),
-                                                         Optional.empty(),
-                                                         Optional.empty(),
-                                                         Optional.of("NewSpecialization"));
+        var updateTicketDto = new TicketUpdateRequestDto(null,
+                                                         "NewSpecialization",
+                                                         null);
 
         mockMvc.perform(requestTester.authenticatedPatch("/tickets/" + ticket.getId(), updateTicketDto))
                .andExpect(status().isOk());
@@ -67,5 +84,4 @@ public class TicketControllerDoctorTest {
         assertNotNull(assignedDoctor);
         assertEquals(newDoctor.getId(), assignedDoctor.getId());
     }
-
 }
