@@ -61,7 +61,7 @@ public class TicketControllerPatientTest {
         var ticketDto = new TicketCreationRequestDto("Title", "Description", "WrongSpecialization");
 
         mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
-                .andExpect(status().isBadRequest());
+               .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class TicketControllerPatientTest {
         var ticketDto = new TicketCreationRequestDto("Title", "Description", "Specialization");
 
         mockMvc.perform(requestTester.authenticatedPost("/tickets", ticketDto))
-                .andExpect(status().isCreated());
+               .andExpect(status().isCreated());
         var createdTicket = ticketRepository.findByTitle(ticketDto.title());
 
         assertEquals(ticketDto.title(), createdTicket.getTitle());
@@ -88,7 +88,7 @@ public class TicketControllerPatientTest {
         var newTicketDto = new TicketCreationRequestDto("Title2", "Description", "Specialization");
 
         mockMvc.perform(requestTester.authenticatedPost("/tickets", newTicketDto))
-                .andExpect(status().isCreated());
+               .andExpect(status().isCreated());
         var createdTicket = ticketRepository.findWithDoctorByTitle(newTicketDto.title()).orElseThrow();
         var assignedDoctor = createdTicket.getDoctor();
 
