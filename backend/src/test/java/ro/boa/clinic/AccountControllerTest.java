@@ -38,7 +38,7 @@ public class AccountControllerTest {
     @Test
     void detailsRequest_authenticated_returnsDetails() throws Exception {
         mockMvc.perform(requestTester.authenticatedGet("/accounts/0")).andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value(account.getEmail()))
-                .andExpect(jsonPath("$.role").value(account.getRole().name()));
+               .andExpect(jsonPath("$.email").value(account.getEmail()))
+               .andExpect(jsonPath("$.role").value(account.getRole().name()));
     }
 }

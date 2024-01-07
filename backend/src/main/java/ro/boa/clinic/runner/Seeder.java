@@ -26,10 +26,20 @@ public class Seeder implements ApplicationRunner {
         accountService.createPatientAccount("user1@example.com", "Password1");
 
         var account1 = accountService.createPatientAccount("user2@example.com", "Password2");
-        var patient1 = patientService.createPatientProfile("John", "Doe", Sex.MALE, LocalDate.of(2004, 1, 8), account1.getEmail());
+        var patient1 = patientService.createPatientProfile(
+            "John",
+            "Doe",
+            Sex.MALE,
+            LocalDate.of(2004, 1, 8),
+            account1.getEmail());
 
         var account2 = accountService.createPatientAccount("user3@example.com", "Password3");
-        var patient2 = patientService.createPatientProfile("Clara", "Doe", Sex.FEMALE, LocalDate.of(2004, 1, 8), account2.getEmail());
+        var patient2 = patientService.createPatientProfile(
+            "Clara",
+            "Doe",
+            Sex.FEMALE,
+            LocalDate.of(2004, 1, 8),
+            account2.getEmail());
 
         var account3 = accountService.createDoctorAccount("user4@example.com", "Password4");
         var doctor1 = doctorService.createDoctorProfile("Lara", "Doe", "Gastroenterologie", account3.getEmail());
@@ -40,16 +50,22 @@ public class Seeder implements ApplicationRunner {
         var account5 = accountService.createDoctorAccount("user7@example.com", "Password7");
         var doctor3 = doctorService.createDoctorProfile("Lisa", "Doe", "Stomatologie", account5.getEmail());
 
-        var ticketToCreate1 = new TicketCreationRequestDto("Durere de burta",
-                "Ma doare burta cand mananc cartofi prajiti", "Gastroenterologie");
+        var ticketToCreate1 = new TicketCreationRequestDto(
+            "Durere de burta",
+            "Ma doare burta cand mananc cartofi prajiti",
+            "Gastroenterologie");
         ticketService.createTicket(ticketToCreate1, patient1);
 
-        var ticketToCreate2 = new TicketCreationRequestDto("Durere de cap",
-                "Ma doare capul cand ma enervez", "Neurologie");
+        var ticketToCreate2 = new TicketCreationRequestDto(
+            "Durere de cap",
+            "Ma doare capul cand ma enervez",
+            "Neurologie");
         ticketService.createTicket(ticketToCreate2, patient2);
 
-        var ticketToCreate3 = new TicketCreationRequestDto("Durere de masea",
-                "Ma doare maseaua cand beau apa rece", "Stomatologie");
+        var ticketToCreate3 = new TicketCreationRequestDto(
+            "Durere de masea",
+            "Ma doare maseaua cand beau apa rece",
+            "Stomatologie");
         ticketService.createTicket(ticketToCreate3, patient2);
     }
 }

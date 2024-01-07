@@ -82,8 +82,8 @@ public class PatientControllerTest {
                .andExpect(status().reason("Account already has profile"));
 
         assertNotEquals(
-                newPatientDto.firstName(),
-                patientRepository.findPatientProfileByEmail(account.getEmail()).getFirstName()
+            newPatientDto.firstName(),
+            patientRepository.findPatientProfileByEmail(account.getEmail()).getFirstName()
         );
     }
 
@@ -91,12 +91,12 @@ public class PatientControllerTest {
     void detailsRequest_authenticated_returnsDetails() throws Exception {
         patientProfile = requestTester.createTestPatient();
         String expectedJson = new JSONObject()
-                .put("id", patientProfile.getId())
-                .put("firstName", patientProfile.getFirstName())
-                .put("lastName", patientProfile.getLastName())
-                .put("sex", patientProfile.getSex().name())
-                .put("birthdate", patientProfile.getBirthdate())
-                .toString();
+            .put("id", patientProfile.getId())
+            .put("firstName", patientProfile.getFirstName())
+            .put("lastName", patientProfile.getLastName())
+            .put("sex", patientProfile.getSex().name())
+            .put("birthdate", patientProfile.getBirthdate())
+            .toString();
 
         mockMvc.perform(requestTester.authenticatedGet("/patients/0")).andExpect(status().isOk())
                .andExpect(content().json(expectedJson));

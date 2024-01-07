@@ -62,8 +62,7 @@ public class AuthConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .cors(Customizer.withDefaults())
+        http.cors(Customizer.withDefaults())
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers(HttpMethod.POST, "/accounts").permitAll()
                 .anyRequest().authenticated()
