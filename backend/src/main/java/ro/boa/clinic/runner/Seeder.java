@@ -15,39 +15,27 @@ public class Seeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        var emmaJohnson = seederHelper.createPatientAccountAndProfile("emmajohnson@gmail.com", "Password1",
+        var emmaJohnson = seederHelper.createPatientAccountAndProfile(
                 "Emma", "Johnson", Sex.FEMALE, LocalDate.of(1985, 1, 15));
-        var ethanSmith = seederHelper.createPatientAccountAndProfile("ethansmith92@gmail.com", "Password2",
+        var ethanSmith = seederHelper.createPatientAccountAndProfile(
                 "Ethan Liam", "Smith", Sex.MALE, LocalDate.of(1992, 5, 18));
-        var oliviaWilliams = seederHelper.createPatientAccountAndProfile("oliviawilliams@yahoo.com", "Password3",
+        var oliviaWilliams = seederHelper.createPatientAccountAndProfile(
                 "Olivia", "Williams", Sex.FEMALE, LocalDate.of(1988, 11, 30));
-        var noahDavid = seederHelper.createPatientAccountAndProfile("noahdavis@gmail.com", "Password4",
+        var noahDavid = seederHelper.createPatientAccountAndProfile(
                 "Noah John", "Davis", Sex.MALE, LocalDate.of(2000, 6, 8));
 
-        seederHelper.createDoctorAccountAndProfile("sarahanderson@virtualclinic.ro", "Clinic1",
-                "Sarah", "Anderson", "Cardiology");
-        seederHelper.createDoctorAccountAndProfile("michaelroberts@virtualclinic.ro", "Clinic2",
-                "Michael", "Roberts", "Pediatrics");
-        seederHelper.createDoctorAccountAndProfile("emilydavis@virtualclinic.ro", "Clinic3",
-                "Emily", "Davis", "Neurology");
-        seederHelper.createDoctorAccountAndProfile("nataliebrown@virtualclinic.ro", "Clinic4",
-                "Natalie", "Brown", "Cardiology");
-        seederHelper.createDoctorAccountAndProfile("jamesmiller@virtualclinic.ro", "Clinic5",
-                "James", "Miller", "Orthopedic Surgery");
-        seederHelper.createDoctorAccountAndProfile("laurentaylor@virtualclinic.ro", "Clinic6",
-                "Lauren", "Taylor", "Dermatologist");
-        seederHelper.createDoctorAccountAndProfile("benjamincarter@virtualclinic.ro", "Clinic7",
-                "Benjamin", "Carter", "Psychiatry");
-        seederHelper.createDoctorAccountAndProfile("sophialewis@virtualclinic.ro", "Clinic8",
-                "Sophia", "Lewis", "Obstetrics/Gynecology");
-        seederHelper.createDoctorAccountAndProfile("davidmartinez@virtualclinic.ro", "Clinic9",
-                "David", "Martinez", "Cardiology");
-        seederHelper.createDoctorAccountAndProfile("ryananderson@virtualclinic.ro", "Clinic10",
-                "Ryan", "Anderson", "Neurology");
-        seederHelper.createDoctorAccountAndProfile("justinjohnson@virtualclinic.ro", "Clinic11",
-                "Justin", "Johnson", "Dermatology");
-        seederHelper.createDoctorAccountAndProfile("alexturner@virtualclinic.ro", "Clinic12",
-                "Alex", "Turner", "Gastroenterology");
+        seederHelper.createDoctorAccountAndProfile("Sarah", "Anderson", "Cardiology");
+        seederHelper.createDoctorAccountAndProfile("Michael", "Roberts", "Pediatrics");
+        seederHelper.createDoctorAccountAndProfile("Emily", "Davis", "Neurology");
+        seederHelper.createDoctorAccountAndProfile("Natalie", "Brown", "Cardiology");
+        seederHelper.createDoctorAccountAndProfile("James", "Miller", "Orthopedic Surgery");
+        seederHelper.createDoctorAccountAndProfile("Lauren", "Taylor", "Dermatologist");
+        seederHelper.createDoctorAccountAndProfile("Benjamin", "Carter", "Psychiatry");
+        seederHelper.createDoctorAccountAndProfile("Sophia", "Lewis", "Obstetrics/Gynecology");
+        seederHelper.createDoctorAccountAndProfile("David", "Martinez", "Cardiology");
+        seederHelper.createDoctorAccountAndProfile("Ryan", "Anderson", "Neurology");
+        seederHelper.createDoctorAccountAndProfile("Justin", "Johnson", "Dermatology");
+        seederHelper.createDoctorAccountAndProfile("Alex", "Turner", "Gastroenterology");
 
         seederHelper.createTicket(oliviaWilliams, "Chest Pain",
                 "I experience sharp chest pain after physical activity", "Cardiology");

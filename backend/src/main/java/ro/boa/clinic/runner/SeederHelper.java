@@ -21,15 +21,15 @@ public class SeederHelper {
     private final DoctorService doctorService;
     private final TicketService ticketService;
 
-    public Patient createPatientAccountAndProfile(String email, String password,
-                                                  String firstName, String lastName, Sex sex, LocalDate dateOfBirth) {
-        accountService.createPatientAccount(email, password);
+    public Patient createPatientAccountAndProfile(String firstName, String lastName, Sex sex, LocalDate dateOfBirth) {
+        var email = String.format("%s.%s@gmail.com", firstName.toLowerCase(), lastName.toLowerCase());
+        accountService.createPatientAccount(email, "Password1");
         return patientService.createPatientProfile(firstName, lastName, sex, dateOfBirth, email);
     }
 
-    public void createDoctorAccountAndProfile(String email, String password,
-                                              String firstName, String lastName, String specialization) {
-        accountService.createDoctorAccount(email, password);
+    public void createDoctorAccountAndProfile(String firstName, String lastName, String specialization) {
+        var email = String.format("%s.%s@clinic.ro", firstName.toLowerCase(), lastName.toLowerCase());
+        accountService.createDoctorAccount(email, "Password2");
         doctorService.createDoctorProfile(firstName, lastName, specialization, email);
     }
 

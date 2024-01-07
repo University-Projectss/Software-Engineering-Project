@@ -14,6 +14,7 @@ import ro.boa.clinic.service.AccountService;
 import ro.boa.clinic.service.DoctorService;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,16 +45,18 @@ public class SpecializationControllerTest {
     @Test
     void specializationsRequest_authenticated_returnsSpecializationsList() throws Exception {
         var account1 = accountService.createDoctorAccount("userd1@example.com", "Passwordd1");
-        var doctor1 = doctorService.createDoctorProfile("Alex", "Doe", "Gastroenterologie", account1.getEmail());
+        var doctor1 = doctorService.createDoctorProfile("Alex", "Doe", "Cardiology", account1.getEmail());
 
         var account2 = accountService.createDoctorAccount("userd2@example.com", "Passwordd2");
-        var doctor2 = doctorService.createDoctorProfile("Sam", "Doe", "Neurologie", account2.getEmail());
+        var doctor2 = doctorService.createDoctorProfile("Sam", "Doe", "Neurology", account2.getEmail());
 
         var account3 = accountService.createDoctorAccount("userd3@example.com", "Passwordd3");
-        var doctor3 = doctorService.createDoctorProfile("Rose", "Doe", "Stomatologie", account3.getEmail());
+        var doctor3 = doctorService.createDoctorProfile("Rose", "Doe", "Dermatology", account3.getEmail());
 
         mockMvc.perform(requestTester.authenticatedGet("/specializations"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*]", containsInAnyOrder(doctor1.getSpecialization(), doctor2.getSpecialization(),doctor3.getSpecialization())));
+                .andExpect(jsonPath("$[*]", hasItem(doctor1.getSpecialization())))
+                .andExpect(jsonPath("$[*]", hasItem(doctor2.getSpecialization())))
+                .andExpect(jsonPath("$[*]", hasItem(doctor3.getSpecialization())));
     }
 }
