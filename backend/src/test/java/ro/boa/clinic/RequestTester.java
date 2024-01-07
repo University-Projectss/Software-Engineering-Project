@@ -49,10 +49,12 @@ public class RequestTester {
     }
 
     public Patient createTestPatient() {
+        assert account != null;
         return patientService.createPatientProfile("John", "Doe", Sex.MALE, LocalDate.now(), account.getEmail());
     }
 
     public Doctor createTestDoctor() {
+        assert account != null;
         return doctorService.createDoctorProfile("John", "Doe", "Specialization", account.getEmail());
     }
 

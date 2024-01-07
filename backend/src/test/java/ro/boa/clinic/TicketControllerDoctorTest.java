@@ -63,8 +63,8 @@ public class TicketControllerDoctorTest {
         mockMvc.perform(requestTester.authenticatedPatch("/tickets/" + ticket.getId(), updateTicketDto))
                .andExpect(status().isOk());
 
-        assertEquals(updateTicketDto.status().get(), ticket.getStatus().name());
-        assertEquals(updateTicketDto.response().get(), ticket.getResponse());
+        assertEquals(updateTicketDto.status().orElseThrow(), ticket.getStatus().name());
+        assertEquals(updateTicketDto.response().orElseThrow(), ticket.getResponse());
     }
 
     @Test
