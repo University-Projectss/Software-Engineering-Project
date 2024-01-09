@@ -22,7 +22,9 @@ public interface TicketRepository extends CrudRepository<Ticket, Long> {
 
     List<Ticket> getTicketsByDoctor(Doctor doctor);
 
-    List<Ticket> getTicketsByPatient(Patient patient);
+    @EntityGraph(attributePaths = {"doctor"})
+    List<Ticket> getTicketsWithDoctorByPatient(Patient patient);
 
-    List<Ticket> getTicketsByPatientAndStatus(Patient patient, Status status);
+    @EntityGraph(attributePaths = {"doctor"})
+    List<Ticket> getTicketsWithDoctorByPatientAndStatus(Patient patient, Status status);
 }

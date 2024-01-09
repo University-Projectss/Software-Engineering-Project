@@ -54,15 +54,11 @@ public class TicketService {
         return createTicket(ticketCreationRequest, patient, freestDoctor);
     }
 
-    public TicketDetailsResponseDto getTicketDetails(Long id) {
+    public TicketResponseDto getTicketDetails(Long id) {
         var ticket = ticketRepository.findById(id).orElseThrow(TicketNotFoundException::new);
         if (isTicketOwnedByLoggedInPatient(ticket)) {
             log.info("Returning ticket details");
-            return new TicketDetailsResponseDto(ticket.getStatus(),
-                                                ticket.getDescription(),
-                                                ticket.getSpecialization(),
-                                                ticket.getDoctor(),
-                                                ticket.getResponse());
+            return convertTicketToPatientTicketDto(ticket);
         } else {
             throw new UnauthorizedAccessException();
         }
@@ -142,9 +138,9 @@ public class TicketService {
 
                 List<Ticket> tickets;
                 if (status.isEmpty()) {
-                    tickets = ticketRepository.getTicketsByPatient(patient);
+                    tickets = ticketRepository.getTicketsWithDoctorByPatient(patient);
                 } else {
-                    tickets = ticketRepository.getTicketsByPatientAndStatus(patient, status.get());
+                    tickets = ticketRepository.getTicketsWithDoctorByPatientAndStatus(patient, status.get());
                 }
                 return tickets.stream()
                         .map(this::convertTicketToPatientTicketDto)
@@ -168,13 +164,19 @@ public class TicketService {
     }
 
     private PatientTicketResponseDto convertTicketToPatientTicketDto(Ticket ticket) {
+        var doctor = ticket.getDoctor();
+        String doctorName = null;
+        if (doctor != null) {
+            doctorName = doctor.getFirstName() + " " + doctor.getLastName();
+        }
         return new PatientTicketResponseDto(
                 ticket.getId(),
-                ticket.getDoctor().getFirstName() + " " + ticket.getDoctor().getLastName(),
+                doctorName,
                 ticket.getTitle(),
                 ticket.getDescription(),
                 ticket.getSpecialization(),
-                ticket.getStatus());
+                ticket.getStatus(),
+                ticket.getResponse());
     }
 
     private DoctorTicketResponseDto convertTicketToDoctorTicketDto(Ticket ticket) {
