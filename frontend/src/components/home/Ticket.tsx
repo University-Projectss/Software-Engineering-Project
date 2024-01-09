@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Text,
@@ -10,17 +10,45 @@ import {
   MenuItem,
   IconButton,
   Badge,
+  useToast,
 } from "@chakra-ui/react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FaTrash, FaPen } from "react-icons/fa";
 import { colors } from "../../theme";
 import { TicketInterface } from "./types";
+import { apiClient, authorise } from "../utils/apiClient";
 
 interface TicketProps {
   ticket: TicketInterface;
 }
 
 export const Ticket: React.FC<TicketProps> = ({ ticket }) => {
+  const toast = useToast();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsLoading(true);
+      apiClient
+        .get(`/tickets/${ticket.id}`, authorise())
+        .then((res) => {
+          console.log(res.data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          setIsOpen(false);
+          toast({
+            title: err.response.data.error,
+            description: err.response.data.message,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        });
+    }
+  }, [isOpen]);
+
   return (
     <Box
       bgColor="white"
@@ -61,11 +89,6 @@ export const Ticket: React.FC<TicketProps> = ({ ticket }) => {
         <Text fontSize="lg" fontWeight="bold" color="black">
           Dr. {ticket.doctor ?? "Who?"}
         </Text>
-        {/* <Text fontSize="md" color="black"> */}
-        {/* Date:{" "}
-          <Text as="span" fontWeight="bold">
-            {""}
-          </Text> */}
         {/* Specialization Badge */}
         <Badge ml={2} bg={colors.blue} color="white">
           {ticket.specialization}
@@ -93,6 +116,9 @@ export const Ticket: React.FC<TicketProps> = ({ ticket }) => {
           fontWeight="bold"
           mt={4}
           bgColor="#C0C0C0"
+          onClick={() => {
+            setIsOpen(true);
+          }}
         >
           See more details
         </Button>
