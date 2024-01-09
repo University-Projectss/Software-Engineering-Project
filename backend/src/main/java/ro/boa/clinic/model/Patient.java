@@ -28,4 +28,7 @@ public class Patient extends Profile {
     @Column(name = "birthdate")
     private LocalDate birthdate;
 
+    public String getFullName() {
+        return getFirstName() + " " + getLastName();
+    }
 }
