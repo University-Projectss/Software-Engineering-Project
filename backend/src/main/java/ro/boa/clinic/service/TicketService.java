@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ro.boa.clinic.dto.*;
 import ro.boa.clinic.exception.DoctorSpecializationNotFound;
-import ro.boa.clinic.exception.TicketNotFound;
 import ro.boa.clinic.exception.TicketNotFoundException;
 import ro.boa.clinic.exception.UnauthorizedAccessException;
 import ro.boa.clinic.model.Doctor;
@@ -86,17 +85,17 @@ public class TicketService {
         var role = accountService.getAuthenticatedUserAccount().getRole();
 
         var ticket = ticketRepository.findById(id);
-        Ticket existingTicket = ticket.orElseThrow(TicketNotFound::new);
+        Ticket existingTicket = ticket.orElseThrow(TicketNotFoundException::new);
 
         switch (role) {
             case PATIENT -> {
                 if (!isTicketOwnedByLoggedInPatient(existingTicket)) {
-                    throw new TicketNotFound();
+                    throw new TicketNotFoundException();
                 }
             }
             case DOCTOR -> {
                 if (!isTicketOwnedByLoggedInDoctor(existingTicket)) {
-                    throw new TicketNotFound();
+                    throw new TicketNotFoundException();
                 }
             }
         }
