@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ro.boa.clinic.dto.TicketCreationRequestDto;
-import ro.boa.clinic.dto.TicketDetailsResponseDto;
 import ro.boa.clinic.dto.TicketResponseDto;
 import ro.boa.clinic.dto.TicketUpdateRequestDto;
 import ro.boa.clinic.model.Status;
@@ -33,7 +32,7 @@ public class TicketController {
 
     @GetMapping(value = "/tickets/{id}")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
-    public ResponseEntity<TicketDetailsResponseDto> getTicketDetails(@PathVariable Long id) {
+    public ResponseEntity<TicketResponseDto> getTicketDetails(@PathVariable Long id) {
         var ticketDetails = ticketService.getTicketDetails(id);
         return ResponseEntity.ok(ticketDetails);
     }

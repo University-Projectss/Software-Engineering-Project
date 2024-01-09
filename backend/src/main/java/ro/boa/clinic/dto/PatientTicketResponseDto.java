@@ -1,9 +1,9 @@
 package ro.boa.clinic.dto;
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ro.boa.clinic.model.Doctor;
 import ro.boa.clinic.model.Status;
 
 @Setter
@@ -11,9 +11,12 @@ import ro.boa.clinic.model.Status;
 @AllArgsConstructor
 public class PatientTicketResponseDto implements TicketResponseDto {
     private Long id;
-    private Doctor doctor;
+    @Nullable
+    private String doctorName;
     private String title;
     private String description;
     private String specialization;
     private Status status;
+    @Nullable
+    private String response;
 }
