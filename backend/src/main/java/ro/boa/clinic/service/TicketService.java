@@ -170,7 +170,7 @@ public class TicketService {
     private PatientTicketResponseDto convertTicketToPatientTicketDto(Ticket ticket) {
         return new PatientTicketResponseDto(
                 ticket.getId(),
-                ticket.getDoctor(),
+                ticket.getDoctor().getFirstName() + " " + ticket.getDoctor().getLastName(),
                 ticket.getTitle(),
                 ticket.getDescription(),
                 ticket.getSpecialization(),

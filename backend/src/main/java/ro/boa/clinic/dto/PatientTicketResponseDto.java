@@ -11,7 +11,7 @@ import ro.boa.clinic.model.Status;
 @AllArgsConstructor
 public class PatientTicketResponseDto implements TicketResponseDto {
     private Long id;
-    private Doctor doctor;
+    private String doctorName;
     private String title;
     private String description;
     private String specialization;
