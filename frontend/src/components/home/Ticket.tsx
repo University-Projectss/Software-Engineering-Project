@@ -1,54 +1,27 @@
-import React, { useEffect, useState } from "react";
 import {
+  Badge,
   Box,
-  Text,
-  Divider,
   Button,
+  Divider,
+  IconButton,
   Menu,
   MenuButton,
-  MenuList,
   MenuItem,
-  IconButton,
-  Badge,
-  useToast,
+  MenuList,
+  Text,
 } from "@chakra-ui/react";
+import React from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { FaTrash, FaPen } from "react-icons/fa";
+import { FaPen, FaTrash } from "react-icons/fa";
 import { colors } from "../../theme";
 import { TicketInterface } from "./types";
-import { apiClient, authorise } from "../utils/apiClient";
 
 interface TicketProps {
   ticket: TicketInterface;
+  handleOpenTicket: (val: string) => void;
 }
 
-export const Ticket: React.FC<TicketProps> = ({ ticket }) => {
-  const toast = useToast();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    if (isOpen) {
-      setIsLoading(true);
-      apiClient
-        .get(`/tickets/${ticket.id}`, authorise())
-        .then((res) => {
-          console.log(res.data);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          setIsOpen(false);
-          toast({
-            title: err.response.data.error,
-            description: err.response.data.message,
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-        });
-    }
-  }, [isOpen]);
-
+export const Ticket: React.FC<TicketProps> = ({ ticket, handleOpenTicket }) => {
   return (
     <Box
       bgColor="white"
@@ -87,7 +60,7 @@ export const Ticket: React.FC<TicketProps> = ({ ticket }) => {
       {/* Ticket content */}
       <Box>
         <Text fontSize="lg" fontWeight="bold" color="black">
-          Dr. {ticket.doctor ?? "Who?"}
+          Dr. {ticket.doctorName ?? "Who?"}
         </Text>
         {/* Specialization Badge */}
         <Badge ml={2} bg={colors.blue} color="white">
@@ -117,7 +90,7 @@ export const Ticket: React.FC<TicketProps> = ({ ticket }) => {
           mt={4}
           bgColor="#C0C0C0"
           onClick={() => {
-            setIsOpen(true);
+            handleOpenTicket(ticket.id + "");
           }}
         >
           See more details

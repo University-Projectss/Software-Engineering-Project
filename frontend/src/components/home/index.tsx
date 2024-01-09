@@ -49,6 +49,9 @@ export const Home: React.FC = () => {
   const [profile, setProfile] =
     useState<ProfileInterface>(defaultProfileValues);
 
+  //variabile to refresh tickets list without reloading the whole page
+  const [fakeReload, setFakeReload] = useState<boolean>(false);
+
   useEffect(() => {
     //check if the user profile exists
     apiClient
@@ -60,6 +63,13 @@ export const Home: React.FC = () => {
           ...res.data,
         });
         setHasProfile(true);
+
+        apiClient.get("/accounts/0", authorise()).then((res) => {
+          auth.setUser({
+            ...auth.user,
+            ...res.data,
+          });
+        });
       })
       .catch((err) => {
         if (err.response.data.status === 404) {
@@ -81,12 +91,19 @@ export const Home: React.FC = () => {
         })
         .catch((err) => {
           console.log(err);
+          toast({
+            title: err.response.data.error,
+            description: err.response.data.message,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
         })
         .finally(() => {
           setLoading(false);
         });
     }
-  }, [hasProfile]);
+  }, [hasProfile, fakeReload]);
 
   const handleCreateProfile = async () => {
     for (let key of Object.keys(profile)) {
@@ -232,7 +249,7 @@ export const Home: React.FC = () => {
         </Text>
 
         {/* Big "Open Ticket" button */}
-        <TicketForm />
+        <TicketForm fakeReload={fakeReload} setFakeReload={setFakeReload} />
       </Flex>
 
       <Tabs>
@@ -257,8 +274,18 @@ export const Home: React.FC = () => {
           </Flex>
         ) : (
           <TabPanels>
-            <TicketsTabContent text="Opened Tickets" tickets={openedTickets} />
-            <TicketsTabContent text="Closed Tickets" tickets={closedTickets} />
+            <TicketsTabContent
+              text="Opened Tickets"
+              tickets={openedTickets}
+              fakeReload={fakeReload}
+              setFakeReload={setFakeReload}
+            />
+            <TicketsTabContent
+              text="Closed Tickets"
+              tickets={closedTickets}
+              fakeReload={fakeReload}
+              setFakeReload={setFakeReload}
+            />
           </TabPanels>
         )}
       </Tabs>

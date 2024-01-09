@@ -12,11 +12,12 @@ const errorInterceptor = (val: AxiosInstance) => {
       return res;
     },
     (err) => {
-      if (err.response.status === 401 || err.response.status === 403) {
-        localStorage.removeItem("accesToken");
-      } else {
-        return Promise.reject(err);
-      }
+      // if (err.response.status === 401 || err.response.status === 403) {
+      //   localStorage.removeItem("accesToken");
+      //   window.location.reload();
+      // } else {
+      return Promise.reject(err);
+      // }
     }
   );
 };

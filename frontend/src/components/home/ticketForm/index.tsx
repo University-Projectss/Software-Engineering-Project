@@ -21,7 +21,10 @@ import { colors } from "../../../theme";
 import { useEffect, useState } from "react";
 import { apiClient, authorise } from "../../utils/apiClient";
 
-export const TicketForm = () => {
+export const TicketForm: React.FC<{
+  fakeReload: boolean;
+  setFakeReload: (val: boolean) => void;
+}> = ({ fakeReload, setFakeReload }) => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState<boolean>(false);
@@ -76,6 +79,7 @@ export const TicketForm = () => {
         authorise()
       )
       .then(() => {
+        setFakeReload(!fakeReload);
         onCloseModal();
         toast({
           title: "Success",
