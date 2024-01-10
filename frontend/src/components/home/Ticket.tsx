@@ -1,26 +1,27 @@
-import React from "react";
 import {
+  Badge,
   Box,
-  Text,
-  Divider,
   Button,
+  Divider,
+  IconButton,
   Menu,
   MenuButton,
-  MenuList,
   MenuItem,
-  IconButton,
-  Badge,
+  MenuList,
+  Text,
 } from "@chakra-ui/react";
+import React from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { FaTrash, FaPen } from "react-icons/fa";
+import { FaPen, FaTrash } from "react-icons/fa";
 import { colors } from "../../theme";
 import { TicketInterface } from "./types";
 
 interface TicketProps {
   ticket: TicketInterface;
+  handleOpenTicket: (val: string) => void;
 }
 
-export const Ticket: React.FC<TicketProps> = ({ ticket }) => {
+export const Ticket: React.FC<TicketProps> = ({ ticket, handleOpenTicket }) => {
   return (
     <Box
       bgColor="white"
@@ -59,13 +60,8 @@ export const Ticket: React.FC<TicketProps> = ({ ticket }) => {
       {/* Ticket content */}
       <Box>
         <Text fontSize="lg" fontWeight="bold" color="black">
-          Dr. {ticket.doctor ?? "Who?"}
+          Dr. {ticket.doctorName ?? "Who?"}
         </Text>
-        {/* <Text fontSize="md" color="black"> */}
-        {/* Date:{" "}
-          <Text as="span" fontWeight="bold">
-            {""}
-          </Text> */}
         {/* Specialization Badge */}
         <Badge ml={2} bg={colors.blue} color="white">
           {ticket.specialization}
@@ -93,6 +89,9 @@ export const Ticket: React.FC<TicketProps> = ({ ticket }) => {
           fontWeight="bold"
           mt={4}
           bgColor="#C0C0C0"
+          onClick={() => {
+            handleOpenTicket(ticket.id + "");
+          }}
         >
           See more details
         </Button>

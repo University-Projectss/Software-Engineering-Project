@@ -1,8 +1,9 @@
 export interface TicketInterface {
   id: number;
-  doctor?: string;
+  doctorName: string;
   title: string;
   description: string;
+  response: string;
   status: "OPENED" | "CLOSED";
   specialization: string;
 }

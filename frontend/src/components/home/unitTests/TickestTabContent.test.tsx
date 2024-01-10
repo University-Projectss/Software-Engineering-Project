@@ -8,16 +8,18 @@ const mockTickets: TicketInterface[] = [
   {
     id: 1,
     title: "title",
-    doctor: "John Doe",
+    doctorName: "John Doe",
     description: "Sample request 1",
+    response: "Sample response",
     status: "OPENED",
     specialization: "Cardiology",
   },
   {
     id: 2,
     title: "title",
-    doctor: "Jane Smith",
+    doctorName: "Jane Smith",
     description: "Sample request 2",
+    response: "Sample response",
     status: "CLOSED",
     specialization: "Dermatology",
   },
@@ -26,6 +28,8 @@ const mockTickets: TicketInterface[] = [
 const mockProps = {
   tickets: mockTickets,
   text: "Sample Tab",
+  fakeReload: false,
+  setFakeReload: () => {},
 };
 
 describe("TicketsTabContent Component", () => {

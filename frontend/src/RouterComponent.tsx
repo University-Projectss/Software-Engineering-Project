@@ -12,12 +12,12 @@ export const RouterComponent = () => {
   const auth = useContext(UserContext);
 
   useEffect(() => {
-    const possibleToken = localStorage.getItem("accesToken");
+    const possibleToken = localStorage.getItem("accessToken");
     if (possibleToken) {
       auth.setToken(possibleToken);
     }
     setIsLoading(false);
-  }, [auth.token]);
+  }, []);
 
   return isLoading ? (
     <Flex height="100vh" alignItems="center" justify="center">
@@ -27,7 +27,7 @@ export const RouterComponent = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="*" element={<NotFound />} />
-      <Route path="/profile" element={<Profile /> } />
+      <Route path="/profile" element={<Profile />} />
     </Routes>
   ) : (
     <Routes>

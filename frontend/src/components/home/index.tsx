@@ -1,37 +1,35 @@
-import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
-  Text,
+  Button,
   Divider,
   Flex,
-  Avatar,
-  Tabs,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
   TabList,
   TabPanels,
-  Spinner,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  Button,
+  Tabs,
+  Text,
   useToast,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
-import { TicketsTab } from "./TicketsTab";
-import { TicketsTabContent } from "./TicketsTabContent";
-import { colors } from "../../theme";
-import { apiClient, authorise } from "../utils/apiClient";
-import { TicketInterface } from "./types";
-import { TicketForm } from "./ticketForm";
+import { FormField } from "../profile/FormField";
 import {
   ProfileInterface,
   defaultProfileValues,
   formData,
 } from "../profile/types";
-import { FormField } from "../profile/FormField";
+import { apiClient } from "../utils/apiClient";
+import { TicketsTab } from "./TicketsTab";
+import { TicketsTabContent } from "./TicketsTabContent";
+import { TicketForm } from "./ticketForm";
+import { TicketInterface } from "./types";
+import { NavBar } from "../common/NavBar";
 
 export const Home: React.FC = () => {
   const auth = useContext(UserContext);
@@ -49,15 +47,22 @@ export const Home: React.FC = () => {
   const [profile, setProfile] =
     useState<ProfileInterface>(defaultProfileValues);
 
+  //variabile to refresh tickets list without reloading the whole page
+  const [fakeReload, setFakeReload] = useState<boolean>(false);
+
   useEffect(() => {
     //check if the user profile exists
     apiClient
-      .get("/patients/0", authorise())
-      .then((res) => {
-        console.log(res.data);
+      .get("/patients/0")
+      .then(async (res) => {
+        const profileDetails = res.data;
+
+        const accountDetails = await apiClient.get("/accounts/0");
+
         auth.setUser({
           ...auth.user,
-          ...res.data,
+          ...profileDetails,
+          ...accountDetails.data,
         });
         setHasProfile(true);
       })
@@ -75,18 +80,25 @@ export const Home: React.FC = () => {
     if (hasProfile) {
       setLoading(true);
       apiClient
-        .get("/tickets", authorise())
+        .get("/tickets")
         .then((res) => {
           setTickets(res.data);
         })
         .catch((err) => {
           console.log(err);
+          toast({
+            title: err.response.data.error,
+            description: err.response.data.message,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
         })
         .finally(() => {
           setLoading(false);
         });
     }
-  }, [hasProfile]);
+  }, [hasProfile, fakeReload]);
 
   const handleCreateProfile = async () => {
     for (let key of Object.keys(profile)) {
@@ -104,16 +116,12 @@ export const Home: React.FC = () => {
     }
 
     await apiClient
-      .post(
-        "/patients",
-        {
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          sex: profile.sex.toUpperCase(),
-          birthdate: new Date(profile.birthDate),
-        }, //not the best way but it works for now
-        authorise()
-      )
+      .post("/patients", {
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        sex: profile.sex.toUpperCase(),
+        birthdate: new Date(profile.birthDate),
+      })
       .then((res) => {
         setHasProfile(true);
         toast({
@@ -180,40 +188,7 @@ export const Home: React.FC = () => {
         </ModalContent>
       </Modal>
 
-      {/* Blue bar at the top */}
-      <Box
-        bg={colors.blue}
-        color="white"
-        fontSize="3xl"
-        fontWeight="bold"
-        p={3}
-        pl={12}
-        pr={4}
-        mb={4}
-        borderBottomRadius="30px"
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Text>App Name</Text>
-        <Box
-          borderRadius="full"
-          p={2}
-          ml={4}
-          display="flex"
-          alignItems="center"
-        >
-          {/* Clickable Blog Text */}
-          <Link to="/blog" style={{ textDecoration: "none" }}>
-            <Text pr={8}>Blog</Text>
-          </Link>
-
-          {/* Clickable Avatar */}
-          <Link to="/profile" style={{ textDecoration: "none" }}>
-            <Avatar src="https://bit.ly/broken-link" bg={colors.blue} />
-          </Link>
-        </Box>
-      </Box>
+      <NavBar />
 
       {/* Flex container for greeting text and Open Ticket button */}
       <Flex
@@ -228,11 +203,11 @@ export const Home: React.FC = () => {
           {`Hello ${auth.user?.firstName ?? ""},`}
           {/* Hello, */}
           <br />
-          we wish you a wonderful day!
+          we wish you a wonderful day! 🌤
         </Text>
 
         {/* Big "Open Ticket" button */}
-        <TicketForm />
+        <TicketForm fakeReload={fakeReload} setFakeReload={setFakeReload} />
       </Flex>
 
       <Tabs>
@@ -257,8 +232,18 @@ export const Home: React.FC = () => {
           </Flex>
         ) : (
           <TabPanels>
-            <TicketsTabContent text="Opened Tickets" tickets={openedTickets} />
-            <TicketsTabContent text="Closed Tickets" tickets={closedTickets} />
+            <TicketsTabContent
+              text="Opened Tickets"
+              tickets={openedTickets}
+              fakeReload={fakeReload}
+              setFakeReload={setFakeReload}
+            />
+            <TicketsTabContent
+              text="Closed Tickets"
+              tickets={closedTickets}
+              fakeReload={fakeReload}
+              setFakeReload={setFakeReload}
+            />
           </TabPanels>
         )}
       </Tabs>

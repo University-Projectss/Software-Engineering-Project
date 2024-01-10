@@ -7,16 +7,17 @@ import { TicketInterface } from "../types";
 
 const mockTicket: TicketInterface = {
   id: 1,
-  doctor: "John Doe",
+  doctorName: "John Doe",
   title: "title",
   description: "Sample request",
+  response: "Sample response",
   status: "OPENED",
   specialization: "Cardiology",
 };
 
 describe("Ticket Component", () => {
   it("renders ticket content correctly", () => {
-    render(<Ticket ticket={mockTicket} />);
+    render(<Ticket ticket={mockTicket} handleOpenTicket={() => {}} />);
 
     // Check if the doctor's name is rendered
     expect(screen.getByText(/Dr\. John Doe/i)).toBeInTheDocument();
@@ -37,7 +38,7 @@ describe("Ticket Component", () => {
   });
 
   it("handles 3-dots-menu click", async () => {
-    render(<Ticket ticket={mockTicket} />);
+    render(<Ticket ticket={mockTicket} handleOpenTicket={() => {}} />);
 
     // Ensure menu is initially closed
     const editMenuItem = screen.queryByText(/Edit/i);

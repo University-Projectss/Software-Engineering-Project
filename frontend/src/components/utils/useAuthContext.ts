@@ -31,7 +31,7 @@ export const useAuthContext = () => {
     await apiClient
       .post("/login", {}, { auth: { username: email, password: password } })
       .then((res) => {
-        localStorage.setItem("accesToken", res.data);
+        localStorage.setItem("accessToken", res.data);
         setToken(res.data);
       })
       .catch((err) =>
@@ -63,7 +63,7 @@ export const useAuthContext = () => {
   };
 
   const logout = () => {
-    localStorage.removeItem("accesToken");
+    localStorage.removeItem("accessToken");
     setToken(null);
     setUser(null);
     window.location.replace("/");
