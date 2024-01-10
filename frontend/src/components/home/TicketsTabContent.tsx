@@ -18,7 +18,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
-import { apiClient, authorise } from "../utils/apiClient";
+import { apiClient } from "../utils/apiClient";
 import { Ticket } from "./Ticket";
 import { TicketInterface } from "./types";
 import { colors } from "../../theme";
@@ -65,7 +65,7 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
     if (isOpenDetails && selectedTicket) {
       setIsLoadingDetails(true);
       apiClient
-        .get(`/tickets/${selectedTicket}`, authorise())
+        .get(`/tickets/${selectedTicket}`)
         .then((res) => {
           setTicketDetails(res.data);
           setIsLoadingDetails(false);
@@ -98,14 +98,10 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
 
   const handleCloseTicket = () => {
     apiClient
-      .patch(
-        `/tickets/${selectedTicket}`,
-        {
-          response: response !== "" ? response : null,
-          status: "CLOSED",
-        },
-        authorise()
-      )
+      .patch(`/tickets/${selectedTicket}`, {
+        response: response !== "" ? response : null,
+        status: "CLOSED",
+      })
       .then((res) => {
         setFakeReload(!fakeReload);
         toast({

@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { colors } from "../../../theme";
 import { useEffect, useState } from "react";
-import { apiClient, authorise } from "../../utils/apiClient";
+import { apiClient } from "../../utils/apiClient";
 
 export const TicketForm: React.FC<{
   fakeReload: boolean;
@@ -44,13 +44,9 @@ export const TicketForm: React.FC<{
   const generateSugestion = async () => {
     setLoading(true);
     await apiClient
-      .post(
-        "/specialization-detection",
-        {
-          description: ticketData.description,
-        },
-        authorise()
-      )
+      .post("/specialization-detection", {
+        description: ticketData.description,
+      })
       .then((res) => {
         setSugestion(res.data.specialization);
         setLoading(false);
@@ -70,14 +66,10 @@ export const TicketForm: React.FC<{
 
   const handleSubmitTicket = async () => {
     await apiClient
-      .post(
-        "/tickets",
-        {
-          ...ticketData,
-          specialization: sugestion ?? "",
-        },
-        authorise()
-      )
+      .post("/tickets", {
+        ...ticketData,
+        specialization: sugestion ?? "",
+      })
       .then(() => {
         setFakeReload(!fakeReload);
         onCloseModal();
@@ -103,7 +95,7 @@ export const TicketForm: React.FC<{
 
   useEffect(() => {
     apiClient
-      .get("/specializations", authorise())
+      .get("/specializations")
       .then((res: any) => {
         setSpecializations(res.data);
       })

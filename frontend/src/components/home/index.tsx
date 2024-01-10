@@ -24,7 +24,7 @@ import {
   defaultProfileValues,
   formData,
 } from "../profile/types";
-import { apiClient, authorise } from "../utils/apiClient";
+import { apiClient } from "../utils/apiClient";
 import { TicketsTab } from "./TicketsTab";
 import { TicketsTabContent } from "./TicketsTabContent";
 import { TicketForm } from "./ticketForm";
@@ -53,11 +53,11 @@ export const Home: React.FC = () => {
   useEffect(() => {
     //check if the user profile exists
     apiClient
-      .get("/patients/0", authorise())
+      .get("/patients/0")
       .then(async (res) => {
         const profileDetails = res.data;
 
-        const accountDetails = await apiClient.get("/accounts/0", authorise());
+        const accountDetails = await apiClient.get("/accounts/0");
 
         auth.setUser({
           ...auth.user,
@@ -80,7 +80,7 @@ export const Home: React.FC = () => {
     if (hasProfile) {
       setLoading(true);
       apiClient
-        .get("/tickets", authorise())
+        .get("/tickets")
         .then((res) => {
           setTickets(res.data);
         })
@@ -116,16 +116,12 @@ export const Home: React.FC = () => {
     }
 
     await apiClient
-      .post(
-        "/patients",
-        {
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          sex: profile.sex.toUpperCase(),
-          birthdate: new Date(profile.birthDate),
-        }, //not the best way but it works for now
-        authorise()
-      )
+      .post("/patients", {
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        sex: profile.sex.toUpperCase(),
+        birthdate: new Date(profile.birthDate),
+      })
       .then((res) => {
         setHasProfile(true);
         toast({

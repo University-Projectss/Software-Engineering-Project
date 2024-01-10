@@ -1,8 +1,9 @@
 import { Avatar, Box, Flex, Image, Text } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { colors } from "../../theme";
 
 export const NavBar = () => {
+  const nav = useNavigate();
   return (
     <Box
       bg={colors.blue}
@@ -18,9 +19,16 @@ export const NavBar = () => {
       alignItems="center"
       justifyContent="space-between"
     >
-      <Flex gap={1} alignItems={"center"}>
+      <Flex
+        gap={1}
+        alignItems={"center"}
+        onClick={() => {
+          nav("/");
+        }}
+        cursor={"pointer"}
+      >
         <Image src="/logo.png" width={20} />
-        <Text fontFamily={"Rubik Moonrocks"}>MinnieHealth</Text>
+        <Text fontFamily={"Black Ops One"}>MinnieHealth</Text>
       </Flex>
       <Box borderRadius="full" p={2} ml={4} display="flex" alignItems="center">
         {/* Clickable Blog Text */}

@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import { UserContext } from "../../App";
 import { colors } from "../../theme";
 import { NavBar } from "../common/NavBar";
-import { apiClient, authorise } from "../utils/apiClient";
+import { apiClient } from "../utils/apiClient";
 import { FormField } from "./FormField";
 import { ProfileInterface, formData } from "./types";
 
@@ -33,16 +33,12 @@ export const Profile: React.FC = () => {
     }
 
     await apiClient
-      .post(
-        "/patients",
-        {
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          sex: profile.sex.toUpperCase(),
-          birthdate: new Date(profile.birthDate),
-        }, //not the best way but it works for now
-        authorise()
-      )
+      .post("/patients", {
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        sex: profile.sex.toUpperCase(),
+        birthdate: new Date(profile.birthDate),
+      })
       .then((res) => {
         toast({
           title: "Success!",
