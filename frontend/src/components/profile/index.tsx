@@ -1,20 +1,11 @@
+import { Box, Button, Flex, Grid, GridItem, useToast } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
-import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  Grid,
-  GridItem,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { UserContext } from "../../App";
 import { colors } from "../../theme";
-import { Link } from "react-router-dom";
+import { NavBar } from "../common/NavBar";
+import { apiClient, authorise } from "../utils/apiClient";
 import { FormField } from "./FormField";
 import { ProfileInterface, formData } from "./types";
-import { apiClient, authorise } from "../utils/apiClient";
-import { UserContext } from "../../App";
 
 export const Profile: React.FC = () => {
   const toast = useToast();
@@ -75,39 +66,7 @@ export const Profile: React.FC = () => {
   return (
     <Box bg="gray.100" height="100vh">
       {/* Blue bar at the top */}
-      <Box
-        bg={colors.blue}
-        color="white"
-        fontSize="3xl"
-        fontWeight="bold"
-        p={3}
-        pl={12}
-        pr={4}
-        mb={4}
-        borderBottomRadius="30px"
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Text>App Name</Text>
-        <Box
-          borderRadius="full"
-          p={2}
-          ml={4}
-          display="flex"
-          alignItems="center"
-        >
-          {/* Clickable Blog Text */}
-          <Link to="/blog" style={{ textDecoration: "none" }}>
-            <Text pr={8}>Blog</Text>
-          </Link>
-
-          {/* Clickable Avatar */}
-          <Link to="" style={{ textDecoration: "none" }}>
-            <Avatar src="https://bit.ly/broken-link" bg={colors.blue} />
-          </Link>
-        </Box>
-      </Box>
+      <NavBar />
 
       <Grid templateColumns="repeat(2, 1fr)" gap={6} p={8}>
         <GridItem colSpan={1}>

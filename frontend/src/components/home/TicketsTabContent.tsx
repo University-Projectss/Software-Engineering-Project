@@ -31,6 +31,17 @@ interface TicketsTabContentProps {
   setFakeReload: (val: boolean) => void;
 }
 
+interface TicketDetailsInterface {
+  id: number;
+  doctorName: string;
+  patientName: string;
+  title: string;
+  description: string;
+  response: string;
+  status: "OPENED" | "CLOSED";
+  specialization: string;
+}
+
 export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
   tickets,
   text,
@@ -44,9 +55,8 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
 
   const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
-  const [ticketDetails, setTicketDetails] = useState<TicketInterface | null>(
-    null
-  );
+  const [ticketDetails, setTicketDetails] =
+    useState<TicketDetailsInterface | null>(null);
 
   const [isOpenSafety, setIsOpenSafety] = useState<boolean>(false);
   const [response, setResponse] = useState<string>("");
@@ -144,6 +154,19 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
                   {ticketDetails?.specialization}
                 </Badge>
 
+                <Flex gap={1}>
+                  <Text>
+                    {auth.user?.role === "PATIENT"
+                      ? "Doctor name: "
+                      : "Patient name: "}
+                  </Text>
+                  <Text fontWeight={700}>
+                    {auth.user?.role === "PATIENT"
+                      ? ticketDetails?.doctorName
+                      : ticketDetails?.patientName}
+                  </Text>
+                </Flex>
+
                 <Box h={5} />
 
                 <Flex direction={"column"}>
@@ -235,7 +258,7 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
       <Text fontSize="4xl" fontWeight="bold" color="black" pl={10}>
         {text}
       </Text>
-      <Flex mt={4} pl={10} wrap={"wrap"}>
+      <Flex mt={4} pl={10} wrap={"wrap"} gap={5}>
         {tickets.length > 0 ? (
           tickets.map((ticket, i) => (
             <Box key={i} mr={4}>

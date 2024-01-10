@@ -1,37 +1,35 @@
-import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
-  Text,
+  Button,
   Divider,
   Flex,
-  Avatar,
-  Tabs,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
   TabList,
   TabPanels,
-  Spinner,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  Button,
+  Tabs,
+  Text,
   useToast,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
-import { TicketsTab } from "./TicketsTab";
-import { TicketsTabContent } from "./TicketsTabContent";
-import { colors } from "../../theme";
-import { apiClient, authorise } from "../utils/apiClient";
-import { TicketInterface } from "./types";
-import { TicketForm } from "./ticketForm";
+import { FormField } from "../profile/FormField";
 import {
   ProfileInterface,
   defaultProfileValues,
   formData,
 } from "../profile/types";
-import { FormField } from "../profile/FormField";
+import { apiClient, authorise } from "../utils/apiClient";
+import { TicketsTab } from "./TicketsTab";
+import { TicketsTabContent } from "./TicketsTabContent";
+import { TicketForm } from "./ticketForm";
+import { TicketInterface } from "./types";
+import { NavBar } from "../common/NavBar";
 
 export const Home: React.FC = () => {
   const auth = useContext(UserContext);
@@ -56,20 +54,17 @@ export const Home: React.FC = () => {
     //check if the user profile exists
     apiClient
       .get("/patients/0", authorise())
-      .then((res) => {
-        console.log(res.data);
+      .then(async (res) => {
+        const profileDetails = res.data;
+
+        const accountDetails = await apiClient.get("/accounts/0", authorise());
+
         auth.setUser({
           ...auth.user,
-          ...res.data,
+          ...profileDetails,
+          ...accountDetails.data,
         });
         setHasProfile(true);
-
-        apiClient.get("/accounts/0", authorise()).then((res) => {
-          auth.setUser({
-            ...auth.user,
-            ...res.data,
-          });
-        });
       })
       .catch((err) => {
         if (err.response.data.status === 404) {
@@ -197,40 +192,7 @@ export const Home: React.FC = () => {
         </ModalContent>
       </Modal>
 
-      {/* Blue bar at the top */}
-      <Box
-        bg={colors.blue}
-        color="white"
-        fontSize="3xl"
-        fontWeight="bold"
-        p={3}
-        pl={12}
-        pr={4}
-        mb={4}
-        borderBottomRadius="30px"
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Text>App Name</Text>
-        <Box
-          borderRadius="full"
-          p={2}
-          ml={4}
-          display="flex"
-          alignItems="center"
-        >
-          {/* Clickable Blog Text */}
-          <Link to="/blog" style={{ textDecoration: "none" }}>
-            <Text pr={8}>Blog</Text>
-          </Link>
-
-          {/* Clickable Avatar */}
-          <Link to="/profile" style={{ textDecoration: "none" }}>
-            <Avatar src="https://bit.ly/broken-link" bg={colors.blue} />
-          </Link>
-        </Box>
-      </Box>
+      <NavBar />
 
       {/* Flex container for greeting text and Open Ticket button */}
       <Flex
@@ -245,7 +207,7 @@ export const Home: React.FC = () => {
           {`Hello ${auth.user?.firstName ?? ""},`}
           {/* Hello, */}
           <br />
-          we wish you a wonderful day!
+          we wish you a wonderful day! 🌤
         </Text>
 
         {/* Big "Open Ticket" button */}
