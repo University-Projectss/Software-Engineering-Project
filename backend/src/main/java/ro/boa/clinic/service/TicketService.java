@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ro.boa.clinic.dto.*;
 import ro.boa.clinic.exception.DoctorSpecializationNotFound;
-import ro.boa.clinic.exception.TicketNotFound;
 import ro.boa.clinic.exception.TicketNotFoundException;
 import ro.boa.clinic.exception.UnauthorizedAccessException;
 import ro.boa.clinic.model.Doctor;
@@ -56,11 +55,23 @@ public class TicketService {
 
     public TicketResponseDto getTicketDetails(Long id) {
         var ticket = ticketRepository.findById(id).orElseThrow(TicketNotFoundException::new);
-        if (isTicketOwnedByLoggedInPatient(ticket)) {
-            log.info("Returning ticket details");
-            return convertTicketToPatientTicketDto(ticket);
-        } else {
-            throw new UnauthorizedAccessException();
+        var currentRole = accountService.getAuthenticatedUserAccount().getRole();
+        log.info("Returning ticket details");
+
+        switch (currentRole) {
+            case PATIENT -> {
+                if (isTicketOwnedByLoggedInPatient(ticket)) {
+                    return convertTicketToPatientTicketDto(ticket);
+                }
+                throw new TicketNotFoundException();
+            }
+            case DOCTOR -> {
+                if (isTicketOwnedByLoggedInDoctor(ticket)) {
+                    return convertTicketToDoctorTicketDto(ticket);
+                }
+                throw new TicketNotFoundException();
+            }
+            default -> throw new UnauthorizedAccessException();
         }
     }
 
@@ -79,24 +90,24 @@ public class TicketService {
         log.info("Checking that the id of the logged-in doctor is the same as " +
                 "the id of the doctor associated with the ticket");
         var doctorProfile = doctorService.getAuthenticatedDoctorProfile();
-        return doctorProfile.getId().equals(ticket.getDoctor().getId());
+        return ticket.getDoctor() != null && doctorProfile.getId().equals(ticket.getDoctor().getId());
     }
 
     public TicketResponseDto updateTicketAuthenticatedUser(Long id, TicketUpdateRequestDto ticketUpdateRequest) {
         var role = accountService.getAuthenticatedUserAccount().getRole();
 
         var ticket = ticketRepository.findById(id);
-        Ticket existingTicket = ticket.orElseThrow(TicketNotFound::new);
+        Ticket existingTicket = ticket.orElseThrow(TicketNotFoundException::new);
 
         switch (role) {
             case PATIENT -> {
                 if (!isTicketOwnedByLoggedInPatient(existingTicket)) {
-                    throw new TicketNotFound();
+                    throw new TicketNotFoundException();
                 }
             }
             case DOCTOR -> {
                 if (!isTicketOwnedByLoggedInDoctor(existingTicket)) {
-                    throw new TicketNotFound();
+                    throw new TicketNotFoundException();
                 }
             }
         }
@@ -151,9 +162,9 @@ public class TicketService {
 
                 List<Ticket> tickets;
                 if (status.isEmpty()) {
-                    tickets = ticketRepository.getTicketsByDoctor(doctor);
+                    tickets = ticketRepository.getTicketsWithPatientByDoctor(doctor);
                 } else {
-                    tickets = ticketRepository.getTicketsByDoctorAndStatus(doctor, status.get());
+                    tickets = ticketRepository.getTicketsWithPatientByDoctorAndStatus(doctor, status.get());
                 }
                 return tickets.stream()
                         .map(this::convertTicketToDoctorTicketDto)
@@ -165,27 +176,25 @@ public class TicketService {
 
     private PatientTicketResponseDto convertTicketToPatientTicketDto(Ticket ticket) {
         var doctor = ticket.getDoctor();
-        String doctorName = null;
-        if (doctor != null) {
-            doctorName = doctor.getFirstName() + " " + doctor.getLastName();
-        }
+        String doctorName = doctor == null ? null : doctor.getFullName();
         return new PatientTicketResponseDto(
                 ticket.getId(),
-                doctorName,
                 ticket.getTitle(),
                 ticket.getDescription(),
                 ticket.getSpecialization(),
                 ticket.getStatus(),
-                ticket.getResponse());
+                ticket.getResponse(),
+                doctorName);
     }
 
     private DoctorTicketResponseDto convertTicketToDoctorTicketDto(Ticket ticket) {
         return new DoctorTicketResponseDto(
                 ticket.getId(),
-                ticket.getPatient(),
                 ticket.getTitle(),
                 ticket.getDescription(),
                 ticket.getSpecialization(),
-                ticket.getStatus());
+                ticket.getStatus(),
+                ticket.getResponse(),
+                ticket.getPatient().getFullName());
     }
 }

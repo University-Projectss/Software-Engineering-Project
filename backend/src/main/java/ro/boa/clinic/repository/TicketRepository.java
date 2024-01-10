@@ -18,9 +18,11 @@ public interface TicketRepository extends CrudRepository<Ticket, Long> {
     @EntityGraph(attributePaths = {"doctor"})
     Optional<Ticket> findWithDoctorByTitle(String title);
 
-    List<Ticket> getTicketsByDoctorAndStatus(Doctor doctor, Status status);
+    @EntityGraph(attributePaths = {"patient"})
+    List<Ticket> getTicketsWithPatientByDoctorAndStatus(Doctor doctor, Status status);
 
-    List<Ticket> getTicketsByDoctor(Doctor doctor);
+    @EntityGraph(attributePaths = {"patient"})
+    List<Ticket> getTicketsWithPatientByDoctor(Doctor doctor);
 
     @EntityGraph(attributePaths = {"doctor"})
     List<Ticket> getTicketsWithDoctorByPatient(Patient patient);

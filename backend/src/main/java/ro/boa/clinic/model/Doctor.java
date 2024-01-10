@@ -22,4 +22,7 @@ public class Doctor extends Profile {
     @Column(name = "specialization")
     private String specialization;
 
+    public String getFullName() {
+        return getFirstName() + " " + getLastName();
+    }
 }

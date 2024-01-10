@@ -14,10 +14,13 @@ import ro.boa.clinic.dto.TicketUpdateRequestDto;
 import ro.boa.clinic.model.Doctor;
 import ro.boa.clinic.model.Role;
 import ro.boa.clinic.model.Status;
+import ro.boa.clinic.model.Ticket;
+import ro.boa.clinic.repository.TicketRepository;
 import ro.boa.clinic.service.TicketService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -26,6 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class TicketControllerDoctorTest {
+    @Autowired
+    private TicketRepository ticketRepository;
+
     @Autowired
     private TicketService ticketService;
 
@@ -45,6 +51,52 @@ public class TicketControllerDoctorTest {
         requestTester.createTestAccount(Role.DOCTOR);
         doctor = requestTester.createTestDoctor();
         requestTester.authenticateAccount();
+    }
+
+    @Test
+    void detailsRequest_validId_returnsDetails() throws Exception {
+        var patient = entityTestUtils.createPatient("Patient");
+        ticketRepository.save(new Ticket(
+            1L,
+            this.doctor,
+            patient,
+            "Title",
+            "Description",
+            "Specialization",
+            Status.OPENED,
+            "Response"
+        ));
+        String ticketDetails = """
+            {
+              'title': 'Title',
+              'status': 'OPENED',
+              'description': 'Description',
+              'specialization': 'Specialization',
+              'patientName': '%s',
+              'response': 'Response'
+            }""".formatted(patient.getFullName());
+
+        mockMvc.perform(requestTester.authenticatedGet("/tickets/1"))
+            .andExpect(status().isOk())
+            .andExpect(content().json(ticketDetails));
+    }
+
+    @Test
+    void detailsRequest_ticketNotOwned_returnsNotFound() throws Exception {
+        var patient = entityTestUtils.createPatient("Patient");
+        ticketRepository.save(new Ticket(
+            1L,
+            null,
+            patient,
+            "Title",
+            "Description",
+            "Specialization",
+            Status.OPENED,
+            "Response"
+        ));
+
+        mockMvc.perform(requestTester.authenticatedGet("/tickets/1"))
+            .andExpect(status().isNotFound());
     }
 
     @Test
