@@ -1,13 +1,17 @@
 package ro.boa.clinic.service;
 
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ro.boa.clinic.exception.AccountAlreadyHasProfile;
 import ro.boa.clinic.exception.DoctorProfileNotFoundException;
+import ro.boa.clinic.model.Account;
 import ro.boa.clinic.model.Doctor;
 import ro.boa.clinic.repository.DoctorRepository;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -45,5 +49,9 @@ public class DoctorService {
 
     public Doctor findFreestDoctorBySpecialization(String specialization) {
         return doctorRepository.findFreestDoctorBySpecialization(specialization);
+    }
+
+    public Optional<Doctor> getDoctorProfileByAccount(@NonNull Account account) {
+        return Optional.ofNullable(doctorRepository.findDoctorProfileByEmail(account.getEmail()));
     }
 }

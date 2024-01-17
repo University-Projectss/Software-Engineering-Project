@@ -1,16 +1,19 @@
 package ro.boa.clinic.service;
 
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ro.boa.clinic.exception.AccountAlreadyHasProfile;
 import ro.boa.clinic.exception.PatientProfileNotFoundException;
+import ro.boa.clinic.model.Account;
 import ro.boa.clinic.model.Patient;
 import ro.boa.clinic.model.Sex;
 import ro.boa.clinic.repository.PatientRepository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -41,5 +44,9 @@ public class PatientService {
         } else {
             return patientProfile;
         }
+    }
+
+    public Optional<Patient> getPatientProfileForAccount(@NonNull Account account) {
+        return Optional.ofNullable(patientRepository.findPatientProfileByEmail(account.getEmail()));
     }
 }
