@@ -91,16 +91,16 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
     }
   }, [selectedTicket]);
 
-  useEffect(() => {
-    apiClient
-      .get("/specializations")
-      .then((res: any) => {
-        setSpecializations(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+  // useEffect(() => {
+  //   apiClient
+  //     .get("/specializations")
+  //     .then((res: any) => {
+  //       setSpecializations(res.data);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }, []);
 
   const onClose = () => {
     setIsOpenDetails(false);
