@@ -86,7 +86,7 @@ export const Ticket: React.FC<TicketProps> = ({
           right="0"
         />
         <MenuList>
-          {ticket.status === "OPENED" && auth.user?.role === "PATIENT" && (
+          {ticket.status === "OPENED" && (
             <MenuItem
               icon={<FaPen />}
               onClick={() => {
