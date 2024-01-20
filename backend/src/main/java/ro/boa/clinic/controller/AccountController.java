@@ -10,12 +10,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ro.boa.clinic.dto.AccountDetailsDto;
 import ro.boa.clinic.dto.AccountRegistrationDto;
+import ro.boa.clinic.dto.ProfileDetailsDto;
 import ro.boa.clinic.service.AccountService;
+import ro.boa.clinic.service.ProfileService;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
 public class AccountController {
     private final AccountService accountService;
+    private final ProfileService profileService;
 
     @PostMapping("/accounts")
     public ResponseEntity<Void> createAccount(@RequestBody AccountRegistrationDto accountRegistrationDto) {
@@ -30,7 +35,13 @@ public class AccountController {
     @GetMapping("/accounts/0")
     public ResponseEntity<AccountDetailsDto> getCurrentAccountDetails() {
         return accountService.findAccountByEmail(accountService.getAuthenticatedUserEmail()).map(account -> {
-            var accountDetailsDto = new AccountDetailsDto(account.getEmail(), account.getRole());
+            Optional<? extends ProfileDetailsDto> profileDetailsDto =
+                profileService.getProfileDetailsForAccount(account);
+            var accountDetailsDto = new AccountDetailsDto(
+                account.getEmail(),
+                account.getRole(),
+                profileDetailsDto.orElse(null)
+            );
             return ResponseEntity.ok(accountDetailsDto);
         }).orElse(ResponseEntity.notFound().build());
     }
