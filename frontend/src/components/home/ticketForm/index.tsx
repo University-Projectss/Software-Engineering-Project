@@ -48,7 +48,17 @@ export const TicketForm: React.FC<{
         description: ticketData.description,
       })
       .then((res) => {
-        setSugestion(res.data.specialization);
+        const ans = res.data.specialization;
+        if (ans === null) {
+          toast({
+            title: "Could not find specialization",
+            description: "Please choose specialization manually.",
+            status: "error",
+            duration: 7000,
+            isClosable: true,
+          });
+        }
+        setSugestion(ans);
         setLoading(false);
       })
       .catch((err) => {
@@ -155,47 +165,50 @@ export const TicketForm: React.FC<{
               <Text>Specialization: </Text>
               {loading ? (
                 <Spinner />
-              ) : sugestion === null ? (
-                <Text
-                  textDecoration={"underline"}
-                  fontWeight={"bold"}
-                  cursor={"pointer"}
-                  onClick={generateSugestion}
-                >
-                  Generate
-                </Text>
               ) : (
-                <Box bgColor={colors.blue} px={3} py={1} borderRadius={100}>
-                  <Text color={"white"} fontWeight={900}>
-                    {sugestion}
+                <Flex gap={4}>
+                  {sugestion !== null && (
+                    <Box bgColor={colors.blue} px={3} py={1} borderRadius={100}>
+                      <Text color={"white"} fontWeight={900}>
+                        {sugestion}
+                      </Text>
+                    </Box>
+                  )}
+                  <Text
+                    textDecoration={"underline"}
+                    fontWeight={"bold"}
+                    cursor={"pointer"}
+                    onClick={generateSugestion}
+                  >
+                    Generate
                   </Text>
-                </Box>
+                </Flex>
               )}
             </Flex>
-            {sugestion !== null && (
-              <Flex
-                color={"#525252"}
-                marginTop={10}
-                gap={5}
-                alignItems={"center"}
+
+            <Flex
+              color={"#525252"}
+              marginTop={10}
+              gap={5}
+              alignItems={"center"}
+            >
+              <Text>Not what you want? </Text>
+              <Select
+                placeholder="Choose yourself"
+                variant={"flushed"}
+                width={"50%"}
+                value={sugestion ?? ""}
+                onChange={(e) => {
+                  setSugestion(e.target.value);
+                }}
               >
-                <Text>Not what you want? </Text>
-                <Select
-                  placeholder="Choose yourself"
-                  variant={"flushed"}
-                  width={"50%"}
-                  onChange={(e) => {
-                    setSugestion(e.target.value);
-                  }}
-                >
-                  {specializations.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </Select>
-              </Flex>
-            )}
+                {specializations.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </Select>
+            </Flex>
           </ModalBody>
 
           <ModalFooter>
