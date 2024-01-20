@@ -360,8 +360,12 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
                 variant={"solid"}
                 colorScheme="blue"
                 onClick={() => {
-                  setIsOpenSafety(true);
-                  setIsOpenDetails(false);
+                  if (auth.user?.role === "PATIENT") {
+                    setIsOpenSafety(true);
+                    setIsOpenDetails(false);
+                  } else {
+                    handleCloseTicket();
+                  }
                 }}
                 isDisabled={auth.user?.role === "DOCTOR" && response === ""}
               >
