@@ -77,6 +77,7 @@ export const Profile: React.FC = () => {
                   type={field.type}
                   profile={profile}
                   setProfile={setProfile}
+                  isDisabled
                 />
               ))}
             </Flex>
