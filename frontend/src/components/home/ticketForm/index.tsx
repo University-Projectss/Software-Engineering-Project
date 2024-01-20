@@ -192,7 +192,6 @@ export const TicketForm: React.FC<{
               gap={5}
               alignItems={"center"}
             >
-              <Text>Not what you want? </Text>
               <Select
                 placeholder="Choose yourself"
                 variant={"flushed"}
