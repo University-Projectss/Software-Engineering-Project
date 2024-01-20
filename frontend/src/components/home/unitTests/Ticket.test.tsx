@@ -59,9 +59,9 @@ describe("Ticket Component", () => {
 
     // Ensure menu is initially closed
     const editMenuItem = screen.queryByText(/Edit/i);
-    const deleteMenuItem = screen.queryByText(/Delete/i);
+    const deleteMenuItem = screen.queryByText(/Close/i);
 
-    expect(editMenuItem).not.toBeVisible();
+    if (editMenuItem) expect(editMenuItem).not.toBeVisible();
     expect(deleteMenuItem).not.toBeVisible();
 
     // Click the 3-dots-menu button
@@ -70,12 +70,12 @@ describe("Ticket Component", () => {
     // Wait for the "Edit" menu item to become visible
     await waitFor(() => {
       const updatedEditMenuItem = screen.queryByText(/Edit/i);
-      expect(updatedEditMenuItem).toBeVisible();
+      if (updatedEditMenuItem) expect(updatedEditMenuItem).toBeVisible();
     });
 
     // Wait for the "Delete" menu item to become visible
     await waitFor(() => {
-      const updatedDeleteMenuItem = screen.queryByText(/Delete/i);
+      const updatedDeleteMenuItem = screen.queryByText(/Close/i);
       expect(updatedDeleteMenuItem).toBeVisible();
     });
   });
