@@ -34,7 +34,7 @@ const mockProps = {
   setFakeReload: () => {},
 };
 
-describe("TicketsTabContent Component", () => {
+describe("TicketsTabContent Component", async () => {
   it("renders tab content correctly with tickets", () => {
     render(
       <Tabs>
