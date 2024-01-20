@@ -53,24 +53,24 @@ export const Home: React.FC = () => {
   useEffect(() => {
     //check if the user profile exists
     apiClient
-      .get("/patients/0")
-      .then(async (res) => {
-        const profileDetails = res.data;
+      .get("/accounts/0")
+      .then((res) => {
+        const accountDetails = res.data;
 
-        const accountDetails = await apiClient.get("/accounts/0");
-
-        auth.setUser({
-          ...auth.user,
-          ...profileDetails,
-          ...accountDetails.data,
-        });
-        setHasProfile(true);
-      })
-      .catch((err) => {
-        if (err.response.data.status === 404) {
+        if (accountDetails.profile !== null) {
+          auth.setUser({
+            ...auth.user,
+            email: accountDetails.email,
+            role: accountDetails.role,
+            ...accountDetails.profile,
+          });
+          setHasProfile(true);
+        } else {
           setHasProfile(false);
           setOpenModal(true);
         }
+      })
+      .catch((err) => {
         console.log(err);
       });
   }, []);

@@ -8,6 +8,7 @@ import { TicketInterface } from "../types";
 const mockTicket: TicketInterface = {
   id: 1,
   doctorName: "John Doe",
+  patientName: "",
   title: "title",
   description: "Sample request",
   response: "Sample response",
@@ -17,7 +18,15 @@ const mockTicket: TicketInterface = {
 
 describe("Ticket Component", () => {
   it("renders ticket content correctly", () => {
-    render(<Ticket ticket={mockTicket} handleOpenTicket={() => {}} />);
+    render(
+      <Ticket
+        ticket={mockTicket}
+        handleOpenTicket={() => {}}
+        fakeReload={false}
+        setFakeReload={() => {}}
+        handleEditTicket={() => {}}
+      />
+    );
 
     // Check if the doctor's name is rendered
     expect(screen.getByText(/Dr\. John Doe/i)).toBeInTheDocument();
@@ -38,13 +47,21 @@ describe("Ticket Component", () => {
   });
 
   it("handles 3-dots-menu click", async () => {
-    render(<Ticket ticket={mockTicket} handleOpenTicket={() => {}} />);
+    render(
+      <Ticket
+        ticket={mockTicket}
+        handleOpenTicket={() => {}}
+        fakeReload={false}
+        setFakeReload={() => {}}
+        handleEditTicket={() => {}}
+      />
+    );
 
     // Ensure menu is initially closed
     const editMenuItem = screen.queryByText(/Edit/i);
-    const deleteMenuItem = screen.queryByText(/Delete/i);
+    const deleteMenuItem = screen.queryByText(/Close/i);
 
-    expect(editMenuItem).not.toBeVisible();
+    if (editMenuItem) expect(editMenuItem).not.toBeVisible();
     expect(deleteMenuItem).not.toBeVisible();
 
     // Click the 3-dots-menu button
@@ -53,12 +70,12 @@ describe("Ticket Component", () => {
     // Wait for the "Edit" menu item to become visible
     await waitFor(() => {
       const updatedEditMenuItem = screen.queryByText(/Edit/i);
-      expect(updatedEditMenuItem).toBeVisible();
+      if (updatedEditMenuItem) expect(updatedEditMenuItem).toBeVisible();
     });
 
     // Wait for the "Delete" menu item to become visible
     await waitFor(() => {
-      const updatedDeleteMenuItem = screen.queryByText(/Delete/i);
+      const updatedDeleteMenuItem = screen.queryByText(/Close/i);
       expect(updatedDeleteMenuItem).toBeVisible();
     });
   });

@@ -9,6 +9,7 @@ const mockTickets: TicketInterface[] = [
     id: 1,
     title: "title",
     doctorName: "John Doe",
+    patientName: "",
     description: "Sample request 1",
     response: "Sample response",
     status: "OPENED",
@@ -18,6 +19,7 @@ const mockTickets: TicketInterface[] = [
     id: 2,
     title: "title",
     doctorName: "Jane Smith",
+    patientName: "",
     description: "Sample request 2",
     response: "Sample response",
     status: "CLOSED",
@@ -33,7 +35,7 @@ const mockProps = {
 };
 
 describe("TicketsTabContent Component", () => {
-  it("renders tab content correctly with tickets", () => {
+  it("renders tab content correctly with tickets", async () => {
     render(
       <Tabs>
         <TabPanels>
@@ -51,7 +53,7 @@ describe("TicketsTabContent Component", () => {
     expect(screen.queryByText(/No sample tab tickets/i)).toBeNull();
   });
 
-  it("renders tab content correctly with no tickets", () => {
+  it("renders tab content correctly with no tickets", async () => {
     const propsWithNoTickets = { ...mockProps, tickets: [] };
     render(
       <Tabs>

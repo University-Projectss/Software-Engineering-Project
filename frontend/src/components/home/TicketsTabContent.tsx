@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Flex,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -11,6 +12,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Select,
   Spinner,
   TabPanel,
   Text,
@@ -61,6 +63,13 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
   const [isOpenSafety, setIsOpenSafety] = useState<boolean>(false);
   const [response, setResponse] = useState<string>("");
 
+  const [ticketToUpdate, setTicketToUpdate] = useState<TicketInterface | null>(
+    null
+  );
+  const [isOpenTicketUpdate, setIsOpenTicketUpdate] = useState<boolean>(false);
+  const [specializations, setSpecializations] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
   useEffect(() => {
     if (isOpenDetails && selectedTicket) {
       setIsLoadingDetails(true);
@@ -82,6 +91,23 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
         });
     }
   }, [selectedTicket]);
+
+  useEffect(() => {
+    setLoading(true);
+    if (isOpenTicketUpdate) {
+      apiClient
+        .get("/specializations")
+        .then((res) => {
+          setSpecializations(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [isOpenTicketUpdate]);
 
   const onClose = () => {
     setIsOpenDetails(false);
@@ -127,8 +153,154 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
       });
   };
 
+  const handleEditTicket = (ticket: TicketInterface) => {
+    setTicketToUpdate(ticket);
+    setIsOpenTicketUpdate(true);
+  };
+
+  const handleSubmitTicketUpdate = async () => {
+    console.log(ticketToUpdate);
+
+    apiClient
+      .patch(`/tickets/${ticketToUpdate?.id}`, {
+        title: ticketToUpdate?.title,
+        description: ticketToUpdate?.description,
+        specialization: ticketToUpdate?.specialization,
+      })
+      .then((res) => {
+        setFakeReload(!fakeReload);
+        toast({
+          title: "Success!",
+          description: "Ticket updated successfully.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .catch((err) => {
+        console.log("Error update ticket", err);
+        toast({
+          title: err.response.data.error,
+          description: err.response.data.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .finally(() => {
+        setIsOpenTicketUpdate(false);
+      });
+  };
+
   return (
     <TabPanel>
+      {/* Ticket update modal */}
+      <Modal
+        isOpen={isOpenTicketUpdate}
+        onClose={() => {
+          setIsOpenTicketUpdate(false);
+        }}
+        size={"xl"}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader
+            alignSelf={"center"}
+            fontWeight="bold"
+            fontSize={"x-large"}
+          >
+            Update Ticket
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {auth.user?.role === "PATIENT" && (
+              <>
+                <Input
+                  placeholder="Ticket title"
+                  value={ticketToUpdate?.title}
+                  variant={"flushed"}
+                  onChange={(e) => {
+                    ticketToUpdate &&
+                      setTicketToUpdate({
+                        ...ticketToUpdate,
+                        title: e.target.value,
+                      });
+                  }}
+                />
+                <Box height={10} />
+                <Text fontWeight={"bold"}>
+                  Please enter your symptoms or questions{" "}
+                </Text>
+                <Textarea
+                  value={ticketToUpdate?.description}
+                  minH={"150px"}
+                  onChange={(e) => {
+                    ticketToUpdate &&
+                      setTicketToUpdate({
+                        ...ticketToUpdate,
+                        description: e.target.value,
+                      });
+                  }}
+                />
+                <Box height={5} />
+              </>
+            )}
+            {auth.user?.role === "DOCTOR" && (
+              <>
+                <Flex gap={2} alignItems={"center"}>
+                  <Text>Specialization: </Text>
+                  <Box bgColor={colors.blue} px={3} py={1} borderRadius={100}>
+                    <Text color={"white"} fontWeight={900}>
+                      {ticketToUpdate?.specialization}
+                    </Text>
+                  </Box>
+                </Flex>
+                <Flex
+                  color={"#525252"}
+                  marginTop={10}
+                  gap={5}
+                  alignItems={"center"}
+                >
+                  <Text>Set a new specialization: </Text>
+                  {loading ? (
+                    <Spinner />
+                  ) : (
+                    <Select
+                      placeholder="Choose yourself"
+                      variant={"flushed"}
+                      width={"50%"}
+                      onChange={(e) => {
+                        ticketToUpdate &&
+                          setTicketToUpdate({
+                            ...ticketToUpdate,
+                            specialization: e.target.value,
+                          });
+                      }}
+                    >
+                      {specializations.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </Select>
+                  )}
+                </Flex>
+              </>
+            )}
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={handleSubmitTicketUpdate}
+            >
+              Update
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       {/* Ticket details modal */}
       <Modal
         isCentered
@@ -175,14 +347,16 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
                 <Flex direction={"column"}>
                   <Text fontWeight={700}>Response</Text>
                   {auth.user?.role === "DOCTOR" ? (
-                    <Textarea
-                      value={response}
-                      onChange={(e) => {
-                        setResponse(e.target.value);
-                      }}
-                      placeholder="Write your response"
-                      minH={"100px"}
-                    ></Textarea>
+                    ticketDetails?.response ?? (
+                      <Textarea
+                        value={response}
+                        onChange={(e) => {
+                          setResponse(e.target.value);
+                        }}
+                        placeholder="Write your response"
+                        minH={"100px"}
+                      ></Textarea>
+                    )
                   ) : (
                     <Text>{ticketDetails?.response ?? "No response yet."}</Text>
                   )}
@@ -197,8 +371,12 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
                 variant={"solid"}
                 colorScheme="blue"
                 onClick={() => {
-                  setIsOpenSafety(true);
-                  setIsOpenDetails(false);
+                  if (auth.user?.role === "PATIENT") {
+                    setIsOpenSafety(true);
+                    setIsOpenDetails(false);
+                  } else {
+                    handleCloseTicket();
+                  }
                 }}
                 isDisabled={auth.user?.role === "DOCTOR" && response === ""}
               >
@@ -258,7 +436,13 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
         {tickets.length > 0 ? (
           tickets.map((ticket, i) => (
             <Box key={i} mr={4}>
-              <Ticket ticket={ticket} handleOpenTicket={handleOpenTicket} />
+              <Ticket
+                ticket={ticket}
+                handleOpenTicket={handleOpenTicket}
+                fakeReload={fakeReload}
+                setFakeReload={setFakeReload}
+                handleEditTicket={handleEditTicket}
+              />
             </Box>
           ))
         ) : (

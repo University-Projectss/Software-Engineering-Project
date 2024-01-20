@@ -9,19 +9,61 @@ import {
   MenuItem,
   MenuList,
   Text,
+  useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useContext } from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { colors } from "../../theme";
 import { TicketInterface } from "./types";
+import { apiClient } from "../utils/apiClient";
+import { UserContext } from "../../App";
 
 interface TicketProps {
   ticket: TicketInterface;
   handleOpenTicket: (val: string) => void;
+  fakeReload: boolean;
+  setFakeReload: (val: boolean) => void;
+  handleEditTicket: (val: TicketInterface) => void;
 }
 
-export const Ticket: React.FC<TicketProps> = ({ ticket, handleOpenTicket }) => {
+export const Ticket: React.FC<TicketProps> = ({
+  ticket,
+  handleOpenTicket,
+  fakeReload,
+  setFakeReload,
+  handleEditTicket,
+}) => {
+  const auth = useContext(UserContext);
+  const toast = useToast();
+
+  const handleCloseTicket = async () => {
+    apiClient
+      .patch(`/tickets/${ticket.id}`, {
+        status: "CLOSED",
+      })
+      .then((res) => {
+        setFakeReload(!fakeReload);
+        toast({
+          title: "Success!",
+          description: "Ticket closed successfully.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .catch((err) => {
+        console.log("Erro close ticket", err);
+        toast({
+          title: err.response.data.error,
+          description: err.response.data.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  };
+
   return (
     <Box
       bgColor="white"
@@ -44,15 +86,22 @@ export const Ticket: React.FC<TicketProps> = ({ ticket, handleOpenTicket }) => {
           right="0"
         />
         <MenuList>
-          <MenuItem icon={<FaPen />} onClick={() => console.log("Edit")}>
-            Edit
-          </MenuItem>
+          {ticket.status === "OPENED" && (
+            <MenuItem
+              icon={<FaPen />}
+              onClick={() => {
+                handleEditTicket(ticket);
+              }}
+            >
+              Edit
+            </MenuItem>
+          )}
           <MenuItem
             icon={<FaTrash />}
             color="red.500"
-            onClick={() => console.log("Delete")}
+            onClick={handleCloseTicket}
           >
-            Delete
+            Close
           </MenuItem>
         </MenuList>
       </Menu>
@@ -60,7 +109,9 @@ export const Ticket: React.FC<TicketProps> = ({ ticket, handleOpenTicket }) => {
       {/* Ticket content */}
       <Box>
         <Text fontSize="lg" fontWeight="bold" color="black">
-          Dr. {ticket.doctorName ?? "Who?"}
+          {`${
+            ticket.doctorName ? `Dr. ${ticket.doctorName}` : ticket.patientName
+          }`}
         </Text>
         {/* Specialization Badge */}
         <Badge ml={2} bg={colors.blue} color="white">

@@ -6,6 +6,7 @@ interface FormFieldProps {
   type: string;
   profile: ProfileInterface;
   setProfile: (val: ProfileInterface) => void;
+  isDisabled?: boolean;
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
@@ -13,6 +14,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   type,
   profile,
   setProfile,
+  isDisabled = false,
 }) => {
   //get the key for the profile interface from the label
   const profileKey: string = label
@@ -33,6 +35,7 @@ export const FormField: React.FC<FormFieldProps> = ({
             {label + ": "}
           </FormLabel>
           <Input
+            isDisabled={isDisabled}
             type={type}
             name={label}
             value={profile[profileKey].toString()}
