@@ -33,6 +33,7 @@ export const FormField: React.FC<FormFieldProps> = ({
             {label + ": "}
           </FormLabel>
           <Input
+            isDisabled
             type={type}
             name={label}
             value={profile[profileKey].toString()}

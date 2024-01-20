@@ -127,6 +127,10 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
       });
   };
 
+  const handleEditTicket = (ticket: TicketInterface) => {
+    const updatedTicket = ticket;
+  };
+
   return (
     <TabPanel>
       {/* Ticket details modal */}
@@ -175,14 +179,16 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
                 <Flex direction={"column"}>
                   <Text fontWeight={700}>Response</Text>
                   {auth.user?.role === "DOCTOR" ? (
-                    <Textarea
-                      value={response}
-                      onChange={(e) => {
-                        setResponse(e.target.value);
-                      }}
-                      placeholder="Write your response"
-                      minH={"100px"}
-                    ></Textarea>
+                    ticketDetails?.response ?? (
+                      <Textarea
+                        value={response}
+                        onChange={(e) => {
+                          setResponse(e.target.value);
+                        }}
+                        placeholder="Write your response"
+                        minH={"100px"}
+                      ></Textarea>
+                    )
                   ) : (
                     <Text>{ticketDetails?.response ?? "No response yet."}</Text>
                   )}
@@ -258,7 +264,13 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
         {tickets.length > 0 ? (
           tickets.map((ticket, i) => (
             <Box key={i} mr={4}>
-              <Ticket ticket={ticket} handleOpenTicket={handleOpenTicket} />
+              <Ticket
+                ticket={ticket}
+                handleOpenTicket={handleOpenTicket}
+                fakeReload={fakeReload}
+                setFakeReload={setFakeReload}
+                handleEditTicket={handleEditTicket}
+              />
             </Box>
           ))
         ) : (

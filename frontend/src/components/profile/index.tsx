@@ -1,7 +1,6 @@
 import { Box, Button, Flex, Grid, GridItem, useToast } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../App";
-import { colors } from "../../theme";
 import { NavBar } from "../common/NavBar";
 import { apiClient } from "../utils/apiClient";
 import { FormField } from "./FormField";
@@ -81,7 +80,7 @@ export const Profile: React.FC = () => {
                 />
               ))}
             </Flex>
-            <Button
+            {/* <Button
               mt={10}
               alignSelf={"flex-end"}
               bg={colors.blue}
@@ -94,7 +93,7 @@ export const Profile: React.FC = () => {
               // onClick={handleSubmit}
             >
               Update Profile
-            </Button>
+            </Button> */}
           </Flex>
         </GridItem>
 
