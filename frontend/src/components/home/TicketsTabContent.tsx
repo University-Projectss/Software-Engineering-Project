@@ -68,6 +68,7 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
   );
   const [isOpenTicketUpdate, setIsOpenTicketUpdate] = useState<boolean>(false);
   const [specializations, setSpecializations] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (isOpenDetails && selectedTicket) {
@@ -92,15 +93,21 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
   }, [selectedTicket]);
 
   useEffect(() => {
-    apiClient
-      .get("/specializations")
-      .then((res) => {
-        setSpecializations(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    setLoading(true);
+    if (isOpenTicketUpdate) {
+      apiClient
+        .get("/specializations")
+        .then((res) => {
+          setSpecializations(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [isOpenTicketUpdate]);
 
   const onClose = () => {
     setIsOpenDetails(false);
@@ -255,24 +262,28 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
                   alignItems={"center"}
                 >
                   <Text>Set a new specialization: </Text>
-                  <Select
-                    placeholder="Choose yourself"
-                    variant={"flushed"}
-                    width={"50%"}
-                    onChange={(e) => {
-                      ticketToUpdate &&
-                        setTicketToUpdate({
-                          ...ticketToUpdate,
-                          specialization: e.target.value,
-                        });
-                    }}
-                  >
-                    {specializations.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </Select>
+                  {loading ? (
+                    <Spinner />
+                  ) : (
+                    <Select
+                      placeholder="Choose yourself"
+                      variant={"flushed"}
+                      width={"50%"}
+                      onChange={(e) => {
+                        ticketToUpdate &&
+                          setTicketToUpdate({
+                            ...ticketToUpdate,
+                            specialization: e.target.value,
+                          });
+                      }}
+                    >
+                      {specializations.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </Select>
+                  )}
                 </Flex>
               </>
             )}
