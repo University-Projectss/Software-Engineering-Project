@@ -94,7 +94,7 @@ export const TicketsTabContent: React.FC<TicketsTabContentProps> = ({
   useEffect(() => {
     apiClient
       .get("/specializations")
-      .then((res: any) => {
+      .then((res) => {
         setSpecializations(res.data);
       })
       .catch((err) => {

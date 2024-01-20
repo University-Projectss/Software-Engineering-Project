@@ -53,7 +53,7 @@ describe("TicketsTabContent Component", () => {
     expect(screen.queryByText(/No sample tab tickets/i)).toBeNull();
   });
 
-  it("renders tab content correctly with no tickets", () => {
+  it("renders tab content correctly with no tickets", async () => {
     const propsWithNoTickets = { ...mockProps, tickets: [] };
     render(
       <Tabs>
