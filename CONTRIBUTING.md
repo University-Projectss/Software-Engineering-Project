@@ -5,11 +5,12 @@ Welcome to MinnieHealth! We're thrilled that you are considering contributing. B
 ## Table of Contents
 
 1. [How to Contribute](#how-to-contribute)
-2. [Setting Up Your Development Environment](#setting-up-your-development-environment)
-3. [Submitting a Contribution](#submitting-a-contribution)
-4. [Communication](#communication)
-5. [Testing](#testing)
-6. [Documentation](#documentation)
+2. [Patterns Used](#patterns-used)
+3. [Setting Up Your Development Environment](#setting-up-your-development-environment)
+4. [Submitting a Contribution](#submitting-a-contribution)
+5. [Communication](#communication)
+6. [Testing](#testing)
+7. [Documentation](#documentation)
 
 ## How to Contribute
 
@@ -18,6 +19,16 @@ Welcome to MinnieHealth! We're thrilled that you are considering contributing. B
 3. Make your changes and commit them with clear, concise commit messages.
 4. Push your branch to your fork.
 5. Open a pull request to the `main` branch of the original repository.
+
+## Patterns Used
+
+# Frontend
+
+We used **Higher Order Component** (HOC) which is a component that receives another component. The HOC contains certain logic that we want to apply to the component that we pass as a parameter. After applying that logic, the HOC returns the element with the additional logic.
+
+# Backend
+
+We used **Model View Controller** (MVC) design pattern which specifies that an application consists of a data model, presentation information, and control information. The pattern requires that each of these be separated into different objects.
 
 ## Setting Up Your Development Environment
 

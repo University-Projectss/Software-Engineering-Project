@@ -57,7 +57,7 @@ Start the Spring server:
 
 ## Frontend
 
-**Requirements:** Node
+**Requirements:** Node  
 Initial setup: `npm install`  
 Start the client:
 
