@@ -14,17 +14,17 @@ patients.
 
 As of the date of this document, the platform has achieved MVP status.
 
-* Patients can create, edit, and close tickets, and doctors can respond to and reassign tickets.
-* The medical specialty is inferred from the ticket description, powered by the OpenAI API.
-* Registration and authentication is also implemented.
+- Patients can create, edit, and close tickets, and doctors can respond to and reassign tickets.
+- The medical specialty is inferred from the ticket description, powered by the OpenAI API.
+- Registration and authentication is also implemented.
 
 Planned features:
 
-* Patient and doctor profiles
-* Admin functionality
-* Ticket attachments
-* Ticket thread
-* Blog
+- Patient and doctor profiles
+- Admin functionality
+- Ticket attachments
+- Ticket thread
+- Blog
 
 # Running
 
@@ -36,8 +36,8 @@ The client requires the server to function.
 **Requirements:** Docker, Java 21, JWT key pair, OpenAI key  
 Initial setup:
 
-* Copy the `.env.example` file to `.env` and configure it with your secrets and API keys.
-* Generate a key pair for JWT authentication:
+- Copy the `.env.example` file to `.env` and configure it with your secrets and API keys.
+- Generate a key pair for JWT authentication:
   ```sh
   openssl genrsa -out src/main/resources/jwt.key 4096
   openssl rsa -in src/main/resources/jwt.key -pubout -outform PEM -out src/main/resources/jwt.pub
@@ -57,7 +57,7 @@ Start the Spring server:
 
 ## Frontend
 
-**Requirements:** Node  
+**Requirements:** Node, React
 Initial setup: `npm install`  
 Start the client:
 
@@ -103,13 +103,26 @@ Note that the database container needs to be running.
 
 Most tests follow the structure:
 
-* Create a test account and obtain an authentication token
-* Insert test data into the database
-* Perform a mock request to an endpoint
-* Verify the response and the database state
+- Create a test account and obtain an authentication token
+- Insert test data into the database
+- Perform a mock request to an endpoint
+- Verify the response and the database state
 
 Since almost every endpoint requires authentication, the `RequestTester` class assists with the boilerplate of creating
 a test account and profile and performing authenticated request.
+
+## Frontend
+
+The frontend contains unit tests to make sure that the tickets are rendered correctly. More precisely, we ensure that the tickets displays the right information, the 3-dots menu behave
+as expected, the tabs are styled as they should be and the case with no tickets is well handled.
+
+Exemple of Ticket test structure:
+
+- Create a mock ticket
+- Render the ticket and check if the necessary content is displayed
+- Render the ticket again and check if the 3-dots menu is initially closed and that it became visible after is clicked.
+
+To run the tests, execute `npm run test`.
 
 # CI
 
@@ -129,3 +142,9 @@ of their symptoms.
 
 **Vulnerability:** The OpenAI API helper is less trustworthy and less important than the other dependencies and should
 potentially be vendored or replaced with an in-house implementation.
+
+## Frontend
+
+- **ChackraUI** for styling.
+- **Axios** for API calls.
+- **React Router** for routing.

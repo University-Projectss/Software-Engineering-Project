@@ -11,13 +11,12 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import React, { useContext } from "react";
+import React from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { colors } from "../../theme";
 import { TicketInterface } from "./types";
 import { apiClient } from "../utils/apiClient";
-import { UserContext } from "../../App";
 
 interface TicketProps {
   ticket: TicketInterface;
@@ -34,7 +33,6 @@ export const Ticket: React.FC<TicketProps> = ({
   setFakeReload,
   handleEditTicket,
 }) => {
-  const auth = useContext(UserContext);
   const toast = useToast();
 
   const handleCloseTicket = async () => {
