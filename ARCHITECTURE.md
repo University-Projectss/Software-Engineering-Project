@@ -57,7 +57,7 @@ Start the Spring server:
 
 ## Frontend
 
-**Requirements:** Node, React
+**Requirements:** Node
 Initial setup: `npm install`  
 Start the client:
 
@@ -145,6 +145,9 @@ potentially be vendored or replaced with an in-house implementation.
 
 ## Frontend
 
-- **ChackraUI** for styling.
+- **React** for building user interface
+- **Chackra UI, styled, framer-motion** for styling.
 - **Axios** for API calls.
 - **React Router** for routing.
+- **Jest** for testing
+- **React Icons** for icons
