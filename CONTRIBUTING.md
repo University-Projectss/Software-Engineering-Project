@@ -8,9 +8,7 @@ Welcome to MinnieHealth! We're thrilled that you are considering contributing. B
 2. [Patterns Used](#patterns-used)
 3. [Setting Up Your Development Environment](#setting-up-your-development-environment)
 4. [Submitting a Contribution](#submitting-a-contribution)
-5. [Communication](#communication)
-6. [Testing](#testing)
-7. [Documentation](#documentation)
+5. [Testing](#testing)
 
 ## How to Contribute
 
@@ -22,13 +20,13 @@ Welcome to MinnieHealth! We're thrilled that you are considering contributing. B
 
 ## Patterns Used
 
-# Frontend
+### Frontend
 
-We used **Higher Order Component** (HOC) which is a component that receives another component. The HOC contains certain logic that we want to apply to the component that we pass as a parameter. After applying that logic, the HOC returns the element with the additional logic.
+We use *Higher Order Component* (HOC) which is a component that receives another component. The HOC contains certain logic that we want to apply to the component that we pass as a parameter. After applying that logic, the HOC returns the element with the additional logic.
 
-# Backend
+### Backend
 
-We used **Model View Controller** (MVC) design pattern which specifies that an application consists of a data model, presentation information, and control information. The pattern requires that each of these be separated into different objects.
+We use the *Model View Controller* (MVC) design pattern which specifies that an application consists of a data model, presentation information, and control information. The pattern requires that each of these be separated into different objects.
 
 ## Setting Up Your Development Environment
 
@@ -44,16 +42,6 @@ Before submitting your contribution, ensure that you have:
 
 Describe your changes in detail when opening a pull request, and provide context for your contribution.
 
-## Communication
-
-You can ask questions or discuss ideas with other contributors via email.
-
 ## Testing
 
 To maintain high code quality, we require tests for all new features and bug fixes. Follow the guidelines in [ARCHITECTURE.md](ARCHITECTURE.md) for testing your contributions.
-
-## Documentation
-
-Help us improve our documentation! If you find an error or have suggestions, submit a pull request to the [documentation file](https://github.com/inginerie-software-2023-2024/proiect-inginerie-software-boa/blob/main/README.md).
-
-Thank you for contributing to MinnieHealth!

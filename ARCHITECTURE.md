@@ -96,7 +96,11 @@ The database container is configured in `backend/compose.yaml`.
 
 # High level diagram of the architecture
 
-## Data journey
+### User journey
+
+See [wiki](https://github.com/inginerie-software-2023-2024/proiect-inginerie-software-boa/wiki/5.-Customer-Journey#user-journey-map)
+
+### Data journey
 
 ![Screenshot](documentation/diagrama.png)
 
