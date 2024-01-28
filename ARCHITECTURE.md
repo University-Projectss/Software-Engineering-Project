@@ -94,6 +94,12 @@ Environment variables containing secrets and API keys are defined in `backend/.e
 The server configuration is found in `backend/src/main/application.properties`.
 The database container is configured in `backend/compose.yaml`.
 
+# High level diagram of the architecture
+
+## Data journey
+
+![Screenshot](documentation/diagrama.png)
+
 # Testing
 
 ## Backend
