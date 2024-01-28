@@ -1,5 +1,5 @@
-**Date:** 2024-01-22  
-**Commit:** 0a85840
+**Date:** 2024-01-28  
+**Commit:** [0a85840](https://github.com/inginerie-software-2023-2024/proiect-inginerie-software-boa/tree/0a85840edb6f6dcd3735b8839efa08c236f8ff46)
 
 # Purpose
 
@@ -102,7 +102,7 @@ See [wiki](https://github.com/inginerie-software-2023-2024/proiect-inginerie-sof
 
 ### Data journey
 
-![Screenshot](documentation/diagrama.png)
+![Data journey diagram](https://github.com/inginerie-software-2023-2024/proiect-inginerie-software-boa/assets/12715035/c6c4d265-eab3-4f64-a365-9728e40b09aa)
 
 # Testing
 
