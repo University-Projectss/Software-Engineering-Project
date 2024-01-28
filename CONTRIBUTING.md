@@ -28,6 +28,8 @@ We use *Higher Order Component* (HOC) which is a component that receives another
 
 We use the *Model View Controller* (MVC) design pattern which specifies that an application consists of a data model, presentation information, and control information. The pattern requires that each of these be separated into different objects.
 
+In addition, we use the *Repository* design pattern to introduce a layer of abstraction on top of the data store. This allows us to easily swap storage implementations, for example using in-memory storage for tests.
+
 ## Setting Up Your Development Environment
 
 To contribute to MinnieHealth, you'll need to set up your local development environment. Follow the steps outlined in [ARCHITECTURE.md](ARCHITECTURE.md) for detailed instructions.
