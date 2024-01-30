@@ -108,7 +108,7 @@ See [wiki](https://github.com/inginerie-software-2023-2024/proiect-inginerie-sof
 
 ## Backend
 
-The backend contains unit tests that verify the behavior of most endpoints. To run the tests, execute `./gradlew test`.
+The backend contains integration tests that verify the behavior of most endpoints. To run the tests, execute `./gradlew test`.
 Note that the database container needs to be running.
 
 Most tests follow the structure:
